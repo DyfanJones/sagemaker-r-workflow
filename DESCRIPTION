@@ -15,7 +15,8 @@ Imports:
     R6,
     R6sagemaker.common,
     R6sagemaker.mlcore,
-    urltools
+    urltools,
+    uuid
 Suggests:
     crayon,
     testthat
@@ -30,4 +31,6 @@ Collate:
     'pipeline.R'
     'workflow_airflow.R'
     'workflow_entries.R'
+    'wrangler_ingestion.R'
+    'wrangler_processing.R'
     'zzz.R'
