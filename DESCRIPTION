@@ -28,9 +28,13 @@ Encoding: UTF-8
 RoxygenNote: 7.1.1
 Collate:
     'r_utils.R'
-    'pipeline.R'
     'workflow_airflow.R'
-    'workflow_entries.R'
+    'workflow_entities.R'
+    'workflow_functions.R'
+    'workflow_parameters.R'
+    'workflow_properties.R'
+    'workflow_steps.R'
+    'workflow_utilities.R'
     'wrangler_ingestion.R'
     'wrangler_processing.R'
     'zzz.R'
