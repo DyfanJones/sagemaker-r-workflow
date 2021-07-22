@@ -13,6 +13,11 @@ Entity = R6Class("Entity",
     #' @description Get the request structure for workflow service calls.
     to_request = function(){
       NotImplementedError$new()
+    },
+
+    #' @description format class
+    format = function(){
+      format_class(self)
     }
   )
 )
@@ -33,6 +38,13 @@ DefaultEnumMeta = R6Class("DefaultEnumMeta",
 #' @description Expressions must implement the expr property.
 #' @keywords internal
 Expression = R6Class("Expression",
+  public = list(
+
+    #' @description format class
+    format = function(){
+      format_class(self)
+    }
+  ),
   active = list(
 
     #' @field expr
