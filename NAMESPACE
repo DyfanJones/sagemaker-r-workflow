@@ -2,8 +2,13 @@
 
 export(AirFlowWorkFlow)
 export(CacheConfig)
+export(CallbackOuputTypeEnum)
+export(CallbackOutput)
+export(CallbackStep)
 export(CreateModelStep)
 export(DataWranglerProcessor)
+export(ExecutionVariable)
+export(ExecutionVariables)
 export(Join)
 export(Parameter)
 export(ParameterBoolean)
