@@ -11,6 +11,7 @@ Entities must implement the to_request method.
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-to_request}{\code{Entity$to_request()}}
+\item \href{#method-format}{\code{Entity$format()}}
 \item \href{#method-clone}{\code{Entity$clone()}}
 }
 }
@@ -21,6 +22,16 @@ Entities must implement the to_request method.
 Get the request structure for workflow service calls.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Entity$to_request()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-format"></a>}}
+\if{latex}{\out{\hypertarget{method-format}{}}}
+\subsection{Method \code{format()}}{
+format class
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Entity$format()}\if{html}{\out{</div>}}
 }
 
 }

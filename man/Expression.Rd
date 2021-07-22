@@ -17,8 +17,19 @@ Expressions must implement the expr property.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
+\item \href{#method-format}{\code{Expression$format()}}
 \item \href{#method-clone}{\code{Expression$clone()}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-format"></a>}}
+\if{latex}{\out{\hypertarget{method-format}{}}}
+\subsection{Method \code{format()}}{
+format class
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Expression$format()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
