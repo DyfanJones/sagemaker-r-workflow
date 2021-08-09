@@ -6,6 +6,7 @@ Authors@R: c(person("Dyfan", "Jones", email="dyfan.r.jones@gmail.com", role= c("
              person("Amazon.com, Inc.", role = "cph"))
 Description: `R6sagemaker` pipeline and workflows.
 Imports:
+    fs,
     httr,
     lgr,
     jsonlite,
@@ -28,17 +29,22 @@ Encoding: UTF-8
 RoxygenNote: 7.1.1
 Collate:
     'r_utils.R'
-    'workflow_airflow.R'
-    'workflow_entities.R'
     'workflow_functions.R'
+    'workflow_entities.R'
     'workflow_properties.R'
     'workflow_steps.R'
+    'workflow__utils.R'
+    'workflow_airflow.R'
     'workflow_callback_step.R'
-    'workflow_condition_steps.R'
+    'workflow_utilities.R'
+    'workflow_step_collections.R'
     'workflow_parameters.R'
     'workflow_execution_variables.R'
-    'workflow_contidions.R'
-    'workflow_utilities.R'
+    'workflow_conditions.R'
+    'workflow_condition_step.R'
+    'workflow_lambda_step.R'
+    'workflow_pipeline_experiment_config.R'
+    'workflow_pipeline.R'
     'wrangler_ingestion.R'
     'wrangler_processing.R'
     'zzz.R'
