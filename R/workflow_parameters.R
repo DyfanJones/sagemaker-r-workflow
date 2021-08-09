@@ -34,7 +34,6 @@ ParameterTypeEnum = R6Class("ParameterTypeEnum",
   )
 )
 
-
 #' @title Workflow Parameter Class
 #' @description Pipeline parameter for workflow.
 #' @export
