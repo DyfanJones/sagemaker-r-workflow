@@ -20,17 +20,19 @@ Imports:
     uuid
 Suggests:
     crayon,
-    testthat
+    testthat,
+    R6sagemaker.mlframework
 Remotes: 
     DyfanJones/sagemaker-r-common,
-    DyfanJones/sagemaker-r-mlcore
+    DyfanJones/sagemaker-r-mlcore,
+    DyfanJones/sagemaker-r-mlframework
 License: Apache License (>= 2.0)
 Encoding: UTF-8
 RoxygenNote: 7.1.1
 Collate:
     'r_utils.R'
-    'workflow_functions.R'
     'workflow_entities.R'
+    'workflow_functions.R'
     'workflow_properties.R'
     'workflow_steps.R'
     'workflow__utils.R'
