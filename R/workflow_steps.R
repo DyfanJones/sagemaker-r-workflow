@@ -86,13 +86,13 @@ Step = R6Class("Step",
     #' @field arguments
     #' The arguments to the particular step service call.
     arguments = function(){
-      NotImplementedError$new()
+      return(invisible(NULL))
     },
 
     #' @field properties
     #' The properties of the particular step.
     properties = function(){
-      NotImplementedError$new()
+      return(invisible(NULL))
     },
 
     #' @field ref

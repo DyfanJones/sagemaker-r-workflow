@@ -12,7 +12,7 @@ Entity = R6Class("Entity",
 
     #' @description Get the request structure for workflow service calls.
     to_request = function(){
-      NotImplementedError$new()
+      R6sagemaker.common::NotImplementedError$new()
     },
 
     #' @description format class
@@ -50,7 +50,7 @@ Expression = R6Class("Expression",
     #' @field expr
     #' Get the expression structure for workflow service calls.
     expr = function(){
-      NotImplementedError$new()
+      return(invisible(NULL))
     }
   ),
   private = list(
