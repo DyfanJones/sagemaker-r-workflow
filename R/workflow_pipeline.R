@@ -322,8 +322,9 @@ update_args = function(args, ...){
   }
 }
 
-#' @title
+#' @title Workflow .PipeLineExecution class
 #' @description Internal class for encapsulating pipeline execution instances.
+#' @keywords internal
 #' @export
 .PipeLineExecution = R6Class(".PipeLineExecution",
   public = list(

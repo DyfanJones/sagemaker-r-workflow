@@ -63,20 +63,20 @@ Construct a TrainingStep, given an `EstimatorBase` instance.
 \item{\code{inputs}}{(str or dict or sagemaker.inputs.TrainingInput
        or sagemaker.inputs.FileSystemInput): Information
        about the training data. This can be one of three types:
-\itemize(
-    \item((str) the S3 location where training data is saved, or a file:// path in
-          local mode.)
-    \item((dict[str, str] or dict[str, sagemaker.inputs.TrainingInput]) If using multiple
+\itemize{
+    \item{(str) the S3 location where training data is saved, or a file:// path in
+          local mode.}
+    \item{(dict[str, str] or dict[str, sagemaker.inputs.TrainingInput]) If using multiple
           channels for training data, you can specify a dict mapping channel names to
-          strings or :func:`~sagemaker.inputs.TrainingInput` objects.)
-    \item((sagemaker.inputs.TrainingInput) - channel configuration for S3 data sources
+          strings or :func:`~sagemaker.inputs.TrainingInput` objects.}
+    \item{(sagemaker.inputs.TrainingInput) - channel configuration for S3 data sources
           that can provide additional information as well as the path to the training
           dataset.
-          See :func:`sagemaker.inputs.TrainingInput` for full details.)
-    \item((sagemaker.inputs.FileSystemInput) - channel configuration for
+          See :func:`sagemaker.inputs.TrainingInput` for full details.}
+    \item{(sagemaker.inputs.FileSystemInput) - channel configuration for
           a file system data source that can provide additional information as well as
-          the path to the training dataset.)
-    )}
+          the path to the training dataset.}
+    }}
 
 \item{\code{cache_config}}{(CacheConfig):  A `sagemaker.workflow.steps.CacheConfig` instance.}
 

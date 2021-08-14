@@ -2,10 +2,11 @@
 % Please edit documentation in R/workflow_pipeline.R
 \name{.PipeLineExecution}
 \alias{.PipeLineExecution}
-\title{}
+\title{Workflow .PipeLineExecution class}
 \description{
 Internal class for encapsulating pipeline execution instances.
 }
+\keyword{internal}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
