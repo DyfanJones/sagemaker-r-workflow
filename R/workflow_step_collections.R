@@ -117,7 +117,7 @@ RegisterModel = R6Class("RegisterModel",
                     source_dir=source_dir,
                     dependencies=dependencies,
                     kwargs)
-        repack_model_step = .invoke(.RepackModelStep$new, kwargs2)
+        repack_model_step = do.call(.RepackModelStep$new, kwargs2)
         steps = c(steps, repack_model_step)
         model_data = repack_model_step$properties$ModelArtifacts$S3ModelArtifacts
 
@@ -156,7 +156,7 @@ RegisterModel = R6Class("RegisterModel",
                         source_dir=source_dir,
                         dependencies=dependencies
                         )
-            repack_model_step = .invoke(.RepackModelStep$new, kwargs2)
+            repack_model_step = do.call(.RepackModelStep$new, kwargs2)
 
             steps = c(steps, repack_model_step)
             model_entity$model_data = (
@@ -189,7 +189,7 @@ RegisterModel = R6Class("RegisterModel",
                   tags=tags,
                   container_def_list=self$container_def_list,
                   kwargs)
-      register_model_step = .invoke(.RegisterModelStep$new, kwargs2)
+      register_model_step = do.call(.RegisterModelStep$new, kwargs2)
 
       if (!isTRUE(repack_model))
         register_model_step$add_depends_on(depends_on)
@@ -303,7 +303,7 @@ EstimatorTransformer = R6Class("EstimatorTransformer",
         sagemaker_session=estimator.sagemaker_session,
         role=estimator$role
       )
-      model = .invoke(Model$new, kwargs2)
+      model = do.call(Model$new, kwargs2)
 
       model_step = CreateModelStep$new(
         name = sprintf("%sCreateModelStep", name),

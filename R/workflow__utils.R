@@ -253,9 +253,9 @@ REPACK_SCRIPT = "_repack_model.py"
           if (!is.null(self$image_uri)){
             image_uri=self$image_uri
             kwargs = c(image_uri=self$image_uri ,self$kwargs)
-            model = .invoke(self$estimator$create_model, kwargs)
+            model = do.call(self$estimator$create_model, kwargs)
           } else {
-            model = .invoke(self$estimator.create_model, self$kwargs)
+            model = do.call(self$estimator.create_model, self$kwargs)
             self$image_uri = model$image_uri
           }
           # reset placeholder
@@ -292,7 +292,7 @@ REPACK_SCRIPT = "_repack_model.py"
         tags=self$tags,
         container_def_list=self$container_def_list
       )
-      request_dict = .invoke(
+      request_dict = do.call(
         Session$private_methods$.get_create_model_package_request, model_package_args
       )
       # these are not available in the workflow service and will cause rejection

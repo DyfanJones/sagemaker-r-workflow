@@ -92,7 +92,7 @@ Pipeline = R6Class("Pipeline",
         kwargs,
         Tags=tags
       )
-      return(.invoke(self$sagemaker_session$sagemaker$create_pipeline, kwargs))
+      return(do.call(self$sagemaker_session$sagemaker$create_pipeline, kwargs))
     },
 
     #' @description Describes a Pipeline in the Workflow service.
@@ -109,7 +109,7 @@ Pipeline = R6Class("Pipeline",
     update = function(role_arn,
                       description=NULL){
       kwargs = private$.create_args(role_arn, description)
-      return(.invoke(self$sagemaker_session$sagemaker$update_pipeline, kwargs))
+      return(do.call(self$sagemaker_session$sagemaker$update_pipeline, kwargs))
     },
 
     #' @description Creates a pipeline or updates it, if it already exists.
@@ -180,7 +180,7 @@ Pipeline = R6Class("Pipeline",
         PipelineExecutionDescription=execution_description,
         PipelineExecutionDisplayName=execution_display_name
       )
-      response = .invoke(self$sagemaker_session$sagemaker$start_pipeline_execution, kwargs)
+      response = do.call(self$sagemaker_session$sagemaker$start_pipeline_execution, kwargs)
       return(.PipelineExecution$new(
         arn=response[["PipelineExecutionArn"]],
         sagemaker_session=self$sagemaker_session)

@@ -210,7 +210,7 @@ TrainingStep = R6Class("TrainingStep",
       train_args = self$estimator$.__enclos_env__$private$.get_train_args(
         self$inputs, experiment_config=list()
       )
-      request_dict = .invoke(
+      request_dict = do.call(
         self$estimator$sagemaker_session$.__enclos_env__$private$.get_train_request,
         train_args
       )
@@ -367,7 +367,7 @@ TransformStep = R6Class("TransformStep",
         experiment_config=list()
       )
 
-      request_dict = .invoke(
+      request_dict = do.call(
         self$transformer$sagemaker_session$.__enclos_env__$private$.get_transform_request,
         transform_args
       )
@@ -479,7 +479,7 @@ ProcessingStep = R6Class("ProcessingStep",
       process_args = ProcessingJob$new()$.__enclos_env__$private$.get_process_args(
         self$processor, ll$normalized_inputs, ll$normalized_outputs, experiment_config=list()
       )
-      request_dict = .invoke(
+      request_dict = do.call(
         self$processor$sagemaker_session._get_process_request,
         process_args
       )
@@ -627,7 +627,7 @@ TuningStep = R6Class("TuningStep",
 
       self$tuner$.__enclos_env__$private$.prepare_for_tuning()
       tuner_args = self$tuner$.__enclos_env__$private$..get_tuner_args(self$inputs)
-      request_dict = .invoke(self$tuner$sagemaker_session$.__enclos_env__$private$.get_tuning_request, tuner_args)
+      request_dict = do.call(self$tuner$sagemaker_session$.__enclos_env__$private$.get_tuning_request, tuner_args)
       request_dict[["HyperParameterTuningJobName"]] = NULL
 
       return(request_dict)
