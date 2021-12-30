@@ -4,7 +4,7 @@
 #' @include workflow_entities.R
 
 #' @import R6
-#' @import R6sagemaker.common
+#' @import sagemaker.common
 
 #' @title Workflow ExecutionVariable class
 #' @description Pipeline execution variables for workflow.

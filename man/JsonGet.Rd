@@ -7,7 +7,7 @@
 Get JSON properties from PropertyFiles.
 }
 \section{Super class}{
-\code{\link[R6sagemaker.workflow:Expression]{R6sagemaker.workflow::Expression}} -> \code{JsonGet}
+\code{\link[sagemaker.workflow:Expression]{sagemaker.workflow::Expression}} -> \code{JsonGet}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -37,7 +37,7 @@ Get JSON properties from PropertyFiles.
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.workflow" data-topic="Expression" data-id="format">}\href{../../R6sagemaker.workflow/html/Expression.html#method-format}{\code{R6sagemaker.workflow::Expression$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Expression" data-id="format">}\href{../../sagemaker.workflow/html/Expression.html#method-format}{\code{sagemaker.workflow::Expression$format()}}\out{</span>}
 }
 \out{</details>}
 }

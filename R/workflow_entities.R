@@ -2,7 +2,7 @@
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/workflow/entities.py
 
 #' @import R6
-#' @import R6sagemaker.common
+#' @import sagemaker.common
 
 #' @title Base object for workflow entities.
 #' @description Entities must implement the to_request method.
@@ -12,7 +12,7 @@ Entity = R6Class("Entity",
 
     #' @description Get the request structure for workflow service calls.
     to_request = function(){
-      R6sagemaker.common::NotImplementedError$new()
+      sagemaker.common::NotImplementedError$new()
     },
 
     #' @description format class

@@ -1,10 +1,10 @@
-Package: R6sagemaker.workflow
+Package: sagemaker.workflow
 Type: Package
-Title: R6sagemaker pipeline and workflows
+Title: sagemaker pipeline and workflows
 Version: 0.1.0
 Authors@R: c(person("Dyfan", "Jones", email="dyfan.r.jones@gmail.com", role= c("aut", "cre")),
              person("Amazon.com, Inc.", role = "cph"))
-Description: `R6sagemaker` pipeline and workflows.
+Description: `sagemaker` pipeline and workflows.
 Imports:
     fs,
     httr,
@@ -14,21 +14,21 @@ Imports:
     processx,
     paws,
     R6,
-    R6sagemaker.common,
-    R6sagemaker.mlcore,
+    sagemaker.common,
+    sagemaker.mlcore,
     urltools,
     uuid
 Suggests:
     crayon,
     testthat,
-    R6sagemaker.mlframework
+    sagemaker.mlframework
 Remotes: 
     DyfanJones/sagemaker-r-common,
     DyfanJones/sagemaker-r-mlcore,
     DyfanJones/sagemaker-r-mlframework
 License: Apache License (>= 2.0)
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Collate:
     'r_utils.R'
     'workflow_entities.R'

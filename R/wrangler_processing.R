@@ -2,14 +2,14 @@
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/wrangler/ingestion.py
 
 #' @import R6
-#' @import R6sagemaker.common
+#' @import sagemaker.common
 #' @import uuid
 
 #' @title DataWranglerProcessor class
 #' @description Handles Amazon SageMaker DataWrangler tasks
 #' @export
 DataWranglerProcessor = R6Class(
-  inherit = R6sagemaker.common::Processor,
+  inherit = sagemaker.common::Processor,
   public = list(
 
     #' @description Initializes a ``Processor`` instance.
@@ -78,8 +78,8 @@ DataWranglerProcessor = R6Class(
       )
 
       self$data_wrangler_flow_source = data_wrangler_flow_source
-      self$sagemaker_session = sagemaker_session %||% R6sagemaker.common::Session$new()
-      image_uri = R6sagemaker.common::ImageUris$new()$retrieve(
+      self$sagemaker_session = sagemaker_session %||% sagemaker.common::Session$new()
+      image_uri = sagemaker.common::ImageUris$new()$retrieve(
         "data-wrangler", region=self$sagemaker_session$paws_region_name
       )
       super$intialize(

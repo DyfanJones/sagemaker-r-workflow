@@ -8,7 +8,7 @@
 
 .onLoad <- function(libname, pkgname) {
   # set package logs and don't propagate root logs
-  .logger = lgr::get_logger(name = "R6sagemaker")$set_propagate(FALSE)
+  .logger = lgr::get_logger(name = "sagemaker")$set_propagate(FALSE)
 
   # set package logger
   assign(

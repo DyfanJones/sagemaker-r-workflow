@@ -7,7 +7,7 @@
 A condition for taking the logical OR of a list of `Condition` instances.
 }
 \section{Super classes}{
-\code{\link[R6sagemaker.workflow:Entity]{R6sagemaker.workflow::Entity}} -> \code{\link[R6sagemaker.workflow:Condition]{R6sagemaker.workflow::Condition}} -> \code{ConditionOr}
+\code{\link[sagemaker.workflow:Entity]{sagemaker.workflow::Entity}} -> \code{\link[sagemaker.workflow:Condition]{sagemaker.workflow::Condition}} -> \code{ConditionOr}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -20,7 +20,7 @@ A condition for taking the logical OR of a list of `Condition` instances.
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.workflow" data-topic="Entity" data-id="format">}\href{../../R6sagemaker.workflow/html/Entity.html#method-format}{\code{R6sagemaker.workflow::Entity$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Entity" data-id="format">}\href{../../sagemaker.workflow/html/Entity.html#method-format}{\code{sagemaker.workflow::Entity$format()}}\out{</span>}
 }
 \out{</details>}
 }

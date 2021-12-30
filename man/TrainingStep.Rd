@@ -7,7 +7,7 @@
 Training step for workflow.
 }
 \section{Super classes}{
-\code{\link[R6sagemaker.workflow:Entity]{R6sagemaker.workflow::Entity}} -> \code{\link[R6sagemaker.workflow:Step]{R6sagemaker.workflow::Step}} -> \code{TrainingStep}
+\code{\link[sagemaker.workflow:Entity]{sagemaker.workflow::Entity}} -> \code{\link[sagemaker.workflow:Step]{sagemaker.workflow::Step}} -> \code{TrainingStep}
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -31,8 +31,8 @@ The TrainingJobName and ExperimentConfig attributes cannot be included.}
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.workflow" data-topic="Step" data-id="add_depends_on">}\href{../../R6sagemaker.workflow/html/Step.html#method-add_depends_on}{\code{R6sagemaker.workflow::Step$add_depends_on()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.workflow" data-topic="Step" data-id="format">}\href{../../R6sagemaker.workflow/html/Step.html#method-format}{\code{R6sagemaker.workflow::Step$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Step" data-id="add_depends_on">}\href{../../sagemaker.workflow/html/Step.html#method-add_depends_on}{\code{sagemaker.workflow::Step$add_depends_on()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Step" data-id="format">}\href{../../sagemaker.workflow/html/Step.html#method-format}{\code{sagemaker.workflow::Step$format()}}\out{</span>}
 }
 \out{</details>}
 }

@@ -7,8 +7,8 @@
 #' @include r_utils.R
 
 #' @import R6
-#' @import R6sagemaker.common
-#' @import R6sagemaker.mlcore
+#' @import sagemaker.common
+#' @import sagemaker.mlcore
 
 #' @title Workflow StepCollection class
 #' @description A wrapper of pipeline steps for workflow.

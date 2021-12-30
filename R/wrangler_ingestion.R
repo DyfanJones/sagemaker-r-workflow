@@ -2,7 +2,7 @@
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/wrangler/ingestion.py
 
 #' @import R6
-#' @import R6sagemaker.common
+#' @import sagemaker.common
 #' @import uuid
 
 #' @title generate data ingestion flow from s3 input

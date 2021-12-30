@@ -7,7 +7,7 @@
 Reference to pipeline experiment config property.
 }
 \section{Super class}{
-\code{\link[R6sagemaker.workflow:Expression]{R6sagemaker.workflow::Expression}} -> \code{PipelineExperimentConfigProperty}
+\code{\link[sagemaker.workflow:Expression]{sagemaker.workflow::Expression}} -> \code{PipelineExperimentConfigProperty}
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -26,7 +26,7 @@ Reference to pipeline experiment config property.
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.workflow" data-topic="Expression" data-id="format">}\href{../../R6sagemaker.workflow/html/Expression.html#method-format}{\code{R6sagemaker.workflow::Expression$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Expression" data-id="format">}\href{../../sagemaker.workflow/html/Expression.html#method-format}{\code{sagemaker.workflow::Expression$format()}}\out{</span>}
 }
 \out{</details>}
 }

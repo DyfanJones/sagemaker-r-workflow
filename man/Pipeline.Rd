@@ -7,7 +7,7 @@
 Pipeline for workflow.
 }
 \section{Super class}{
-\code{\link[R6sagemaker.workflow:Entity]{R6sagemaker.workflow::Entity}} -> \code{Pipeline}
+\code{\link[sagemaker.workflow:Entity]{sagemaker.workflow::Entity}} -> \code{Pipeline}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -27,7 +27,7 @@ Pipeline for workflow.
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.workflow" data-topic="Entity" data-id="format">}\href{../../R6sagemaker.workflow/html/Entity.html#method-format}{\code{R6sagemaker.workflow::Entity$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Entity" data-id="format">}\href{../../sagemaker.workflow/html/Entity.html#method-format}{\code{sagemaker.workflow::Entity$format()}}\out{</span>}
 }
 \out{</details>}
 }

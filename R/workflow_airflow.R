@@ -5,8 +5,8 @@
 
 #' @import R6
 #' @import fs
-#' @import R6sagemaker.common
-#' @import R6sagemaker.mlcore
+#' @import sagemaker.common
+#' @import sagemaker.mlcore
 
 #' @title AirFlowWorkFlow helper class
 #' @description Helper class to take sagemaker classes and format output for Airflow.

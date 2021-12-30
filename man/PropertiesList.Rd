@@ -7,7 +7,7 @@
 PropertiesList for use in workflow expressions
 }
 \section{Super classes}{
-\code{\link[R6sagemaker.workflow:PropertiesMeta]{R6sagemaker.workflow::PropertiesMeta}} -> \code{\link[R6sagemaker.workflow:Properties]{R6sagemaker.workflow::Properties}} -> \code{PropertiesList}
+\code{\link[sagemaker.workflow:PropertiesMeta]{sagemaker.workflow::PropertiesMeta}} -> \code{\link[sagemaker.workflow:Properties]{sagemaker.workflow::Properties}} -> \code{PropertiesList}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -20,7 +20,7 @@ PropertiesList for use in workflow expressions
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.workflow" data-topic="PropertiesMeta" data-id="format">}\href{../../R6sagemaker.workflow/html/PropertiesMeta.html#method-format}{\code{R6sagemaker.workflow::PropertiesMeta$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="PropertiesMeta" data-id="format">}\href{../../sagemaker.workflow/html/PropertiesMeta.html#method-format}{\code{sagemaker.workflow::PropertiesMeta$format()}}\out{</span>}
 }
 \out{</details>}
 }

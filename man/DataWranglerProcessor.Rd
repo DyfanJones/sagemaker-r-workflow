@@ -7,7 +7,7 @@
 Handles Amazon SageMaker DataWrangler tasks
 }
 \section{Super class}{
-\code{\link[R6sagemaker.common:Processor]{R6sagemaker.common::Processor}}
+\code{\link[sagemaker.common:Processor]{sagemaker.common::Processor}}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -19,8 +19,8 @@ Handles Amazon SageMaker DataWrangler tasks
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="Processor" data-id="format">}\href{../../R6sagemaker.common/html/Processor.html#method-format}{\code{R6sagemaker.common::Processor$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="Processor" data-id="run">}\href{../../R6sagemaker.common/html/Processor.html#method-run}{\code{R6sagemaker.common::Processor$run()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="Processor" data-id="format">}\href{../../sagemaker.common/html/Processor.html#method-format}{\code{sagemaker.common::Processor$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="Processor" data-id="run">}\href{../../sagemaker.common/html/Processor.html#method-run}{\code{sagemaker.common::Processor$run()}}\out{</span>}
 }
 \out{</details>}
 }

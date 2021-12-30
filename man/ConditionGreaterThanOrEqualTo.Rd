@@ -7,7 +7,7 @@
 A condition for greater than or equal to comparisons.
 }
 \section{Super classes}{
-\code{\link[R6sagemaker.workflow:Entity]{R6sagemaker.workflow::Entity}} -> \code{\link[R6sagemaker.workflow:Condition]{R6sagemaker.workflow::Condition}} -> \code{\link[R6sagemaker.workflow:ConditionComparison]{R6sagemaker.workflow::ConditionComparison}} -> \code{ConditionGreaterThanOrEqualTo}
+\code{\link[sagemaker.workflow:Entity]{sagemaker.workflow::Entity}} -> \code{\link[sagemaker.workflow:Condition]{sagemaker.workflow::Condition}} -> \code{\link[sagemaker.workflow:ConditionComparison]{sagemaker.workflow::ConditionComparison}} -> \code{ConditionGreaterThanOrEqualTo}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -19,8 +19,8 @@ A condition for greater than or equal to comparisons.
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.workflow" data-topic="Entity" data-id="format">}\href{../../R6sagemaker.workflow/html/Entity.html#method-format}{\code{R6sagemaker.workflow::Entity$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.workflow" data-topic="ConditionComparison" data-id="to_request">}\href{../../R6sagemaker.workflow/html/ConditionComparison.html#method-to_request}{\code{R6sagemaker.workflow::ConditionComparison$to_request()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Entity" data-id="format">}\href{../../sagemaker.workflow/html/Entity.html#method-format}{\code{sagemaker.workflow::Entity$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="ConditionComparison" data-id="to_request">}\href{../../sagemaker.workflow/html/ConditionComparison.html#method-to_request}{\code{sagemaker.workflow::ConditionComparison$to_request()}}\out{</span>}
 }
 \out{</details>}
 }

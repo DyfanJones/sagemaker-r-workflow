@@ -7,7 +7,7 @@
 Register Model step collection for workflow.
 }
 \section{Super class}{
-\code{\link[R6sagemaker.workflow:StepCollection]{R6sagemaker.workflow::StepCollection}} -> \code{RegisterModel}
+\code{\link[sagemaker.workflow:StepCollection]{sagemaker.workflow::StepCollection}} -> \code{RegisterModel}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -19,8 +19,8 @@ Register Model step collection for workflow.
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.workflow" data-topic="StepCollection" data-id="format">}\href{../../R6sagemaker.workflow/html/StepCollection.html#method-format}{\code{R6sagemaker.workflow::StepCollection$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.workflow" data-topic="StepCollection" data-id="request_list">}\href{../../R6sagemaker.workflow/html/StepCollection.html#method-request_list}{\code{R6sagemaker.workflow::StepCollection$request_list()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="StepCollection" data-id="format">}\href{../../sagemaker.workflow/html/StepCollection.html#method-format}{\code{sagemaker.workflow::StepCollection$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="StepCollection" data-id="request_list">}\href{../../sagemaker.workflow/html/StepCollection.html#method-request_list}{\code{sagemaker.workflow::StepCollection$request_list()}}\out{</span>}
 }
 \out{</details>}
 }

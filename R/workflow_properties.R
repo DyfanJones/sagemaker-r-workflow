@@ -5,7 +5,7 @@
 #' @include r_utils.R
 
 #' @import R6
-#' @import R6sagemaker.common
+#' @import sagemaker.common
 #' @importFrom jsonlite read_json
 #' @importFrom fs path
 
@@ -39,7 +39,7 @@ PropertiesMeta = R6Class("PropertiesMeta",
 .load_service_model = function(){
   path = system.file(
     fs::path("sagemaker", "2017-07-24", "service-2.json"),
-    package = "R6sagemaker.workflow")
+    package = "sagemaker.workflow")
   return(jsonlite::read_json(path))
 }
 

@@ -6,7 +6,7 @@
 #' @include workflow_entities.R
 
 #' @import R6
-#' @import R6sagemaker.common
+#' @import sagemaker.common
 
 
 #' @title LambdaOutput type enum.

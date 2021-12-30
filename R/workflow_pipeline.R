@@ -14,7 +14,7 @@
 
 #' @import jsonlite
 #' @import R6
-#' @import R6sagemaker.common
+#' @import sagemaker.common
 
 #' @title Workflow Pipeline class
 #' @description Pipeline for workflow.
@@ -346,7 +346,7 @@ update_args = function(args, ...){
     initialize = function(arn,
                           sagemaker_session=NULL){
       self$arn = arn
-      self$sagemaker_session = sagemaker_session %||% R6sagemaker.common::Session$new()
+      self$sagemaker_session = sagemaker_session %||% sagemaker.common::Session$new()
     },
 
     #' @description Stops a pipeline execution.
@@ -411,7 +411,7 @@ update_args = function(args, ...){
           flush(stdout())
           message = sprintf("Error for %s: Failed. Reason: %s",
             response[["PipelineArn"]], response[["FailureReason"]] %||% "(No reason provided)")
-          R6sagemaker.common::UnexpectedStatusError$new(message)
+          sagemaker.common::UnexpectedStatusError$new(message)
         }
         Sys.sleep(delay)
       }

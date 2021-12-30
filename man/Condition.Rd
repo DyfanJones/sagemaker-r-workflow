@@ -7,7 +7,7 @@
 Abstract Condition entity.
 }
 \section{Super class}{
-\code{\link[R6sagemaker.workflow:Entity]{R6sagemaker.workflow::Entity}} -> \code{Condition}
+\code{\link[sagemaker.workflow:Entity]{sagemaker.workflow::Entity}} -> \code{Condition}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -26,8 +26,8 @@ Abstract Condition entity.
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.workflow" data-topic="Entity" data-id="format">}\href{../../R6sagemaker.workflow/html/Entity.html#method-format}{\code{R6sagemaker.workflow::Entity$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.workflow" data-topic="Entity" data-id="to_request">}\href{../../R6sagemaker.workflow/html/Entity.html#method-to_request}{\code{R6sagemaker.workflow::Entity$to_request()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Entity" data-id="format">}\href{../../sagemaker.workflow/html/Entity.html#method-format}{\code{sagemaker.workflow::Entity$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Entity" data-id="to_request">}\href{../../sagemaker.workflow/html/Entity.html#method-to_request}{\code{sagemaker.workflow::Entity$to_request()}}\out{</span>}
 }
 \out{</details>}
 }

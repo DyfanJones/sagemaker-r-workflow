@@ -8,8 +8,8 @@
 
 #' @import fs
 #' @import R6
-#' @import R6sagemaker.common
-#' @import R6sagemaker.mlcore
+#' @import sagemaker.common
+#' @import sagemaker.mlcore
 
 FRAMEWORK_VERSION = "0.23-1"
 INSTANCE_TYPE = "ml.m5.large"
@@ -39,7 +39,7 @@ REPACK_SCRIPT = "_repack_model.py"
     inputs = NULL,
 
     #' @field sagemaker_session
-    #' `R6sagemaker.common::Session` class
+    #' `sagemaker.common::Session` class
     sagemaker_session = NULL,
 
     #' @field role
@@ -57,7 +57,7 @@ REPACK_SCRIPT = "_repack_model.py"
     #' @param source_dir : placeholder
     #' @param dependencies : placeholder
     #' @param depends_on : placeholder
-    #' @param ... : additional parameters passed `R6sagemaker.mlframework::SKLearn` class
+    #' @param ... : additional parameters passed `sagemaker.mlframework::SKLearn` class
     initialize = function(name,
                           sagemaker_session,
                           role,
@@ -85,10 +85,10 @@ REPACK_SCRIPT = "_repack_model.py"
       private$.dependencies = dependencies
 
       # import SKLearn when needed to avoid cyclic dependency
-      SKLearn = pkg_method("SKLearn","R6sagemaker.mlframework")
+      SKLearn = pkg_method("SKLearn","sagemaker.mlframework")
 
       # the real estimator and inputs
-      repacker = R6sagemaker.mlframework::SKLearn$new(
+      repacker = sagemaker.mlframework::SKLearn$new(
         framework_version=FRAMEWORK_VERSION,
         instance_type=INSTANCE_TYPE,
         entry_point=REPACK_SCRIPT,
@@ -102,7 +102,7 @@ REPACK_SCRIPT = "_repack_model.py"
         ...
       )
       repacker$disable_profiler = TRUE
-      inputs = R6sagemaker.common::TrainingInput$new(private$.model_prefix)
+      inputs = sagemaker.common::TrainingInput$new(private$.model_prefix)
 
       super$initialize(
         name=name, depends_on=depends_on, estimator=repacker, inputs=inputs

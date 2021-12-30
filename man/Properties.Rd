@@ -7,7 +7,7 @@
 Properties for use in workflow expressions.
 }
 \section{Super class}{
-\code{\link[R6sagemaker.workflow:PropertiesMeta]{R6sagemaker.workflow::PropertiesMeta}} -> \code{Properties}
+\code{\link[sagemaker.workflow:PropertiesMeta]{sagemaker.workflow::PropertiesMeta}} -> \code{Properties}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -35,7 +35,7 @@ Properties for use in workflow expressions.
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.workflow" data-topic="PropertiesMeta" data-id="format">}\href{../../R6sagemaker.workflow/html/PropertiesMeta.html#method-format}{\code{R6sagemaker.workflow::PropertiesMeta$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="PropertiesMeta" data-id="format">}\href{../../sagemaker.workflow/html/PropertiesMeta.html#method-format}{\code{sagemaker.workflow::PropertiesMeta$format()}}\out{</span>}
 }
 \out{</details>}
 }

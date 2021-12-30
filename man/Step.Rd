@@ -7,7 +7,7 @@
 Pipeline step for workflow.
 }
 \section{Super class}{
-\code{\link[R6sagemaker.workflow:Entity]{R6sagemaker.workflow::Entity}} -> \code{Step}
+\code{\link[sagemaker.workflow:Entity]{sagemaker.workflow::Entity}} -> \code{Step}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}

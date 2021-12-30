@@ -8,7 +8,7 @@ Repacks model artifacts with inference entry point.
 }
 \keyword{internal}
 \section{Super classes}{
-\code{\link[R6sagemaker.workflow:Entity]{R6sagemaker.workflow::Entity}} -> \code{\link[R6sagemaker.workflow:Step]{R6sagemaker.workflow::Step}} -> \code{\link[R6sagemaker.workflow:TrainingStep]{R6sagemaker.workflow::TrainingStep}} -> \code{.RepackModelStep}
+\code{\link[sagemaker.workflow:Entity]{sagemaker.workflow::Entity}} -> \code{\link[sagemaker.workflow:Step]{sagemaker.workflow::Step}} -> \code{\link[sagemaker.workflow:TrainingStep]{sagemaker.workflow::TrainingStep}} -> \code{.RepackModelStep}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -21,7 +21,7 @@ Repacks model artifacts with inference entry point.
 
 \item{\code{inputs}}{A `sagemaker.inputs.TrainingInput` instance. Defaults to `None`.}
 
-\item{\code{sagemaker_session}}{`R6sagemaker.common::Session` class}
+\item{\code{sagemaker_session}}{`sagemaker.common::Session` class}
 
 \item{\code{role}}{execution role}
 }
@@ -37,9 +37,9 @@ Repacks model artifacts with inference entry point.
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.workflow" data-topic="Step" data-id="add_depends_on">}\href{../../R6sagemaker.workflow/html/Step.html#method-add_depends_on}{\code{R6sagemaker.workflow::Step$add_depends_on()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.workflow" data-topic="Step" data-id="format">}\href{../../R6sagemaker.workflow/html/Step.html#method-format}{\code{R6sagemaker.workflow::Step$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.workflow" data-topic="TrainingStep" data-id="to_request">}\href{../../R6sagemaker.workflow/html/TrainingStep.html#method-to_request}{\code{R6sagemaker.workflow::TrainingStep$to_request()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Step" data-id="add_depends_on">}\href{../../sagemaker.workflow/html/Step.html#method-add_depends_on}{\code{sagemaker.workflow::Step$add_depends_on()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Step" data-id="format">}\href{../../sagemaker.workflow/html/Step.html#method-format}{\code{sagemaker.workflow::Step$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="TrainingStep" data-id="to_request">}\href{../../sagemaker.workflow/html/TrainingStep.html#method-to_request}{\code{sagemaker.workflow::TrainingStep$to_request()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -83,7 +83,7 @@ Constructs a TrainingStep, given an `EstimatorBase` instance.
 
 \item{\code{depends_on}}{: placeholder}
 
-\item{\code{...}}{: additional parameters passed `R6sagemaker.mlframework::SKLearn` class}
+\item{\code{...}}{: additional parameters passed `sagemaker.mlframework::SKLearn` class}
 }
 \if{html}{\out{</div>}}
 }

@@ -6,8 +6,8 @@
 #' @include r_utils.R
 
 #' @import R6
-#' @import R6sagemaker.common
-#' @import R6sagemaker.mlcore
+#' @import sagemaker.common
+#' @import sagemaker.mlcore
 
 #' @title Workflow StepTypeEnum class
 #' @description Enum of step types.
