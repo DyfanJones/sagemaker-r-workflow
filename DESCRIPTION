@@ -16,12 +16,12 @@ Imports:
     R6,
     sagemaker.common,
     sagemaker.mlcore,
+    sagemaker.mlframework,
     urltools,
     uuid
 Suggests:
     crayon,
-    testthat,
-    sagemaker.mlframework
+    testthat
 Remotes: 
     DyfanJones/sagemaker-r-common,
     DyfanJones/sagemaker-r-mlcore,

@@ -10,6 +10,7 @@
 #' @import R6
 #' @import sagemaker.common
 #' @import sagemaker.mlcore
+#' @import sagemaker.mlframework
 
 FRAMEWORK_VERSION = "0.23-1"
 INSTANCE_TYPE = "ml.m5.large"
@@ -83,9 +84,6 @@ REPACK_SCRIPT = "_repack_model.py"
       private$.entry_point_basename = basename(private$.entry_point)
       private$.source_dir = source_dir
       private$.dependencies = dependencies
-
-      # import SKLearn when needed to avoid cyclic dependency
-      SKLearn = pkg_method("SKLearn","sagemaker.mlframework")
 
       # the real estimator and inputs
       repacker = sagemaker.mlframework::SKLearn$new(
