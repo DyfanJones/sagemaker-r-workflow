@@ -1,0 +1,3 @@
+[submodule "vendor/botocore"]
+	path = vendor/botocore
+	url = https://github.com/boto/botocore
