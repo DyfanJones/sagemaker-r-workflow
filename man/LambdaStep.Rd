@@ -43,6 +43,8 @@ Constructs a LambdaStep.
 \if{html}{\out{<div class="r">}}\preformatted{LambdaStep$new(
   name,
   lambda_func,
+  display_name = NULL,
+  description = NULL,
   inputs = NULL,
   outputs = NULL,
   cache_config = NULL,
@@ -58,6 +60,10 @@ Constructs a LambdaStep.
 \item{\code{lambda_func}}{(str): An instance of sagemaker.lambda_helper.Lambda.
 If lambda arn is specified in the instance, LambdaStep just invokes the function,
 else lambda function will be created while creating the pipeline.}
+
+\item{\code{display_name}}{(str): The display name of the Lambda step.}
+
+\item{\code{description}}{(str): The description of the Lambda step.}
 
 \item{\code{inputs}}{(dict): Input arguments that will be provided
 to the lambda function.}

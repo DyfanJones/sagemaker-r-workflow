@@ -2,19 +2,21 @@
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/workflow/condition_step.py
 
 #' @include workflow_conditions.R
-#' @include workflow_entities.R
-#' @include workflow_properties.R
 #' @include workflow_steps.R
 #' @include workflow_step_collections.R
 #' @include workflow_utilities.R
+#' @include workflow_entities.R
+#' @include workflow_properties.R
 #' @include r_utils.R
 
 #' @import R6
+#' @import sagemaker.core
 #' @import sagemaker.common
 #' @import sagemaker.mlcore
 
 #' @title Workflow ConditionStep class
-#' @description Conditional step for pipelines to support conditional branching in the execution of steps.
+#' @description Conditional step for pipelines to support conditional
+#'              branching in the execution of steps.
 #' @export
 ConditionStep = R6Class("ConditionStep",
   inherit = Step,
@@ -40,6 +42,8 @@ ConditionStep = R6Class("ConditionStep",
     #'              execution.
     #' @param name (str): The name of the step.
     #' @param depends_on (List[str]): The list of step names the current step depends on
+    #' @param display_name (str): The display name of the condition step.
+    #' @param description (str): The description of the condition step.
     #' @param conditions (List[Condition]): A list of `sagemaker.workflow.conditions.Condition`
     #'              instances.
     #' @param if_steps (List[Union[Step, StepCollection]]): A list of `sagemaker.workflow.steps.Step`
@@ -50,10 +54,14 @@ ConditionStep = R6Class("ConditionStep",
     #'              marked as ready for execution if the list of conditions evaluates to False.
     initialize = function(name,
                           depends_on=NULL,
+                          display_name=NULL,
+                          description=NULL,
                           conditions=NULL,
                           if_steps=NULL,
                           else_steps=NULL){
-      super$initialize(name, StepTypeEnum$CONDITION, depends_on)
+      super$initialize(
+        name, display_name, description, StepTypeEnum$CONDITION, depends_on
+      )
       self$conditions = conditions %||% list()
       self$if_steps = if_steps %||% list()
       self$else_steps = else_steps %||% list()
@@ -70,7 +78,7 @@ ConditionStep = R6Class("ConditionStep",
     #' The arguments dict that is used to define the conditional branching in the pipeline.
     arguments = function(){
       return(list(
-        Conditions=lapply(),
+        Conditions=lapply(self$conditions, function(condition) condition$to_request()),
         IfSteps=list_to_request(self$if_steps),
         ElseSteps=list_to_request(self$else_steps))
       )
@@ -124,7 +132,10 @@ JsonGet = R6Class("JsonGet",
     #' @field expr
     #' The expression dict for a `JsonGet` function.
     expr = function(){
-      if (isinstance(self.property_file, PropertyFile)){
+      if (!is.character(self$step_name))
+        ValueError$new("Please give step name as a string")
+
+      if (inherits(self$property_file, "PropertyFile")){
         name = self$property_file.name
       } else {
           name = self$property_file

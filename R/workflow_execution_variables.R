@@ -4,6 +4,7 @@
 #' @include workflow_entities.R
 
 #' @import R6
+#' @import sagemaker.core
 #' @import sagemaker.common
 
 #' @title Workflow ExecutionVariable class

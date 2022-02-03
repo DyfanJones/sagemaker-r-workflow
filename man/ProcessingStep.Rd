@@ -7,7 +7,7 @@
 Processing step for workflow.
 }
 \section{Super classes}{
-\code{\link[sagemaker.workflow:Entity]{sagemaker.workflow::Entity}} -> \code{\link[sagemaker.workflow:Step]{sagemaker.workflow::Step}} -> \code{ProcessingStep}
+\code{\link[sagemaker.workflow:Entity]{sagemaker.workflow::Entity}} -> \code{\link[sagemaker.workflow:Step]{sagemaker.workflow::Step}} -> \code{\link[sagemaker.workflow:ConfigurableRetryStep]{sagemaker.workflow::ConfigurableRetryStep}} -> \code{ProcessingStep}
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -33,6 +33,7 @@ ProcessingJobName and ExperimentConfig cannot be included in the arguments.}
 \itemize{
 \item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Step" data-id="add_depends_on">}\href{../../sagemaker.workflow/html/Step.html#method-add_depends_on}{\code{sagemaker.workflow::Step$add_depends_on()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Step" data-id="format">}\href{../../sagemaker.workflow/html/Step.html#method-format}{\code{sagemaker.workflow::Step$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="ConfigurableRetryStep" data-id="add_retry_policy">}\href{../../sagemaker.workflow/html/ConfigurableRetryStep.html#method-add_retry_policy}{\code{sagemaker.workflow::ConfigurableRetryStep$add_retry_policy()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -47,13 +48,17 @@ Construct a ProcessingStep, given a `Processor` instance.
 \if{html}{\out{<div class="r">}}\preformatted{ProcessingStep$new(
   name,
   processor,
+  display_name = NULL,
+  description = NULL,
   inputs = NULL,
   outputs = NULL,
   job_arguments = NULL,
   code = NULL,
   property_files = NULL,
   cache_config = NULL,
-  depends_on = NULL
+  depends_on = NULL,
+  retry_policies = NULL,
+  kms_key = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -63,6 +68,10 @@ Construct a ProcessingStep, given a `Processor` instance.
 \item{\code{name}}{(str): The name of the processing step.}
 
 \item{\code{processor}}{(Processor): A `sagemaker.processing.Processor` instance.}
+
+\item{\code{display_name}}{(str): The display name of the processing step.}
+
+\item{\code{description}}{(str): The description of the processing step.}
 
 \item{\code{inputs}}{(List[ProcessingInput]): A list of `sagemaker.processing.ProcessorInput`
 instances. Defaults to `None`.}
@@ -81,8 +90,13 @@ for and resolves from the configured processing output list.}
 
 \item{\code{cache_config}}{(CacheConfig):  A `sagemaker.workflow.steps.CacheConfig` instance.}
 
-\item{\code{depends_on}}{(List[str]): A list of step names this `sagemaker.workflow.steps.ProcessingStep`
-depends on}
+\item{\code{depends_on}}{(List[str] or List[Step]): A list of step names or step instance
+this `sagemaker.workflow.steps.ProcessingStep` depends on}
+
+\item{\code{retry_policies}}{(List[RetryPolicy]):  A list of retry policy}
+
+\item{\code{kms_key}}{(str): The ARN of the KMS key that is used to encrypt the
+user code file. Defaults to `None`.}
 }
 \if{html}{\out{</div>}}
 }

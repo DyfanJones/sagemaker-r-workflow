@@ -4,3 +4,6 @@
 ^examples$
 ^NOTICE.txt
 ^LICENSE.txt
+^vendor$
+^Makefile$
+^data-raw$

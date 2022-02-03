@@ -8,8 +8,6 @@
 #' @include r_utils.R
 
 #' @import R6
-#' @import sagemaker.common
-#' @import sagemaker.mlcore
 
 #' @title Workflow CondiitionType class
 #' @description Condition type enum.

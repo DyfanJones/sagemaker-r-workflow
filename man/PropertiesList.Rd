@@ -30,7 +30,7 @@ PropertiesList for use in workflow expressions
 \subsection{Method \code{new()}}{
 Create a PropertiesList instance representing the given shape.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PropertiesList$new(path, shape_name = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PropertiesList$new(path, shape_name = NULL, service_name = "sagemaker")}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -39,6 +39,8 @@ Create a PropertiesList instance representing the given shape.
 \item{\code{path}}{(str): The parent path of the PropertiesList instance.}
 
 \item{\code{shape_name}}{(str): The botocore sagemaker service model shape name.}
+
+\item{\code{service_name}}{(str): The botocore service name.}
 
 \item{\code{root_shape_name}}{(str): The botocore sagemaker service model shape name.}
 }
@@ -51,7 +53,7 @@ Create a PropertiesList instance representing the given shape.
 \subsection{Method \code{get_item()}}{
 Populate the indexing item with a Property, for both lists and dictionaries.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PropertiesList$get_item()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PropertiesList$get_item(item)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

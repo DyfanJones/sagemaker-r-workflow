@@ -8,13 +8,16 @@
 #' @include workflow_execution_variables.R
 #' @include workflow_parameters.R
 #' @include workflow_pipeline_experiment_config.R
+#' @include workflow_parallelism_config.R
+#' @include workflow_properties.R
 #' @include workflow_steps.R
 #' @include workflow_step_collections.R
 #' @include workflow_utilities.R
 
 #' @import jsonlite
 #' @import R6
-#' @import sagemaker.common
+#' @import sagemaker.core
+#' @importFrom stats setNames
 
 #' @title Workflow Pipeline class
 #' @description Pipeline for workflow.
@@ -82,12 +85,16 @@ Pipeline = R6Class("Pipeline",
     #' @param description (str): A description of the pipeline.
     #' @param tags (List[Dict[str, str]]): A list of {"Key": "string", "Value": "string"} dicts as
     #'              tags.
+    #' @param parallelism_config (Optional[ParallelismConfiguration]): Parallelism configuration
+    #'              that is applied to each of the executions of the pipeline. It takes precedence
+    #'              over the parallelism configuration of the parent pipeline.
     #' @return A response dict from the service.
     create = function(role_arn,
                       description=NULL,
-                      tags=NULL){
+                      tags=NULL,
+                      parallelism_config=NULL){
       tags = .append_project_tags(tags)
-      kwargs = private$.create_args(role_arn, description)
+      kwargs = private$.create_args(role_arn, description, parallelism_config)
       update_args(
         kwargs,
         Tags=tags
@@ -105,10 +112,14 @@ Pipeline = R6Class("Pipeline",
     #' @description Updates a Pipeline in the Workflow service.
     #' @param role_arn (str): The role arn that is assumed by pipelines to create step artifacts.
     #' @param description (str): A description of the pipeline.
+    #' @param parallelism_config (Optional[ParallelismConfiguration]): Parallelism configuration
+    #'              that is applied to each of the executions of the pipeline. It takes precedence
+    #'              over the parallelism configuration of the parent pipeline.
     #' @return A response dict from the service.
     update = function(role_arn,
-                      description=NULL){
-      kwargs = private$.create_args(role_arn, description)
+                      description=NULL,
+                      parallelism_config=NULL){
+      kwargs = private$.create_args(role_arn, description, parallelism_config)
       return(do.call(self$sagemaker_session$sagemaker$update_pipeline, kwargs))
     },
 
@@ -117,32 +128,37 @@ Pipeline = R6Class("Pipeline",
     #' @param description (str): A description of the pipeline.
     #' @param tags (List[Dict[str, str]]): A list of {"Key": "string", "Value": "string"} dicts as
     #'              tags.
+    #' @param parallelism_config (Optional[Config for parallel steps, Parallelism configuration that
+    #'              is applied to each of. the executions
     #' @return response dict from service
     upsert = function(role_arn,
                       description=NULL,
-                      tags=NULL){
+                      tags=NULL,
+                      parallelism_config=NULL){
       tryCatch({
-        response = self$create(role_arn, description, tags)
+        response = self$create(role_arn, description, tags, parallelism_config)
       }, error = function(e){
-        error = attributes(e)$error_response
-        if(error$Code == "ValidationException"
-           && grepl("Pipeline names must be unique within" ,e$message)){
+        error_code = paws_error_code(e)
+        if(error_code == "ValidationException"
+           && grepl("Pipeline names must be unique within", e$message)){
           response = self$update(role_arn, description)
           if(!is.null(tags)){
             old_tags = self$sagemaker_session$sagemaker$list_tags(
               ResourceArn=response[["PipelineArn"]]
             )[["Tags"]]
-            tag_keys = lapply(tags, function(tags) tag[["Key"]])
+
+            tag_keys = lapply(tags, function(tag) tag[["Key"]])
             for (old_tag in old_tags){
               if (!(old_tag[["Key"]] %in% names(tag_keys)))
-                tags = c(tags, old_tag)
+                tags =list.append(tags, old_tag)
             }
             self$sagemaker_session$sagemaker$add_tags(
               ResourceArn=response[["PipelineArn"]], Tags=tags
             )
           }
         } else {
-          stop(e)}
+          stop(e)
+        }
       })
       return(response)
     },
@@ -158,17 +174,22 @@ Pipeline = R6Class("Pipeline",
     #'              pipeline parameters.
     #' @param execution_display_name (str): The display name of the pipeline execution.
     #' @param execution_description (str): A description of the execution.
+    #' @param parallelism_config (Optional[ParallelismConfiguration]): Parallelism configuration
+    #'              that is applied to each of the executions of the pipeline. It takes precedence
+    #'              over the parallelism configuration of the parent pipeline.
     #' @return A `.PipelineExecution` instance, if successful.
     start = function(parameters=NULL,
                      execution_display_name=NULL,
-                     execution_description=NULL){
+                     execution_description=NULL,
+                     parallelism_config=NULL){
       exists = TRUE
-      tryCatch(
-        self$describe(),
+      tryCatch({
+        self$describe()
+        },
         error = function(e){
           assign("exists", FALSE, envir = parent.env(environment()))
       })
-      if (!exists)
+      if (!isTRUE(exists))
         ValueError$new(
           "This pipeline is not associated with a Pipeline in SageMaker. ",
           "Please invoke create() first before attempting to invoke start()."
@@ -178,7 +199,8 @@ Pipeline = R6Class("Pipeline",
         kwargs,
         PipelineParameters=format_start_parameters(parameters),
         PipelineExecutionDescription=execution_description,
-        PipelineExecutionDisplayName=execution_display_name
+        PipelineExecutionDisplayName=execution_display_name,
+        ParallelismConfiguration=parallelism_config
       )
       response = do.call(self$sagemaker_session$sagemaker$start_pipeline_execution, kwargs)
       return(.PipelineExecution$new(
@@ -193,6 +215,14 @@ Pipeline = R6Class("Pipeline",
       request_dict[["PipelineExperimentConfig"]] = interpolate(
         request_dict[["PipelineExperimentConfig"]], list(), list()
       )
+      callback_output_to_step_map = .map_callback_outputs(self$steps)
+      lambda_output_to_step_name = .map_lambda_outputs(self$steps)
+      request_dict[["Steps"]] = interpolate(
+        request_dict[["Steps"]],
+        callback_output_to_step_map=callback_output_to_step_map,
+        lambda_output_to_step_map=lambda_output_to_step_name
+      )
+
       return(jsonlite::toJSON(request_dict, auto_unbox = T))
     }
   ),
@@ -204,16 +234,38 @@ Pipeline = R6Class("Pipeline",
     # Args:
     #   role_arn (str): The role arn that is assumed by pipelines to create step artifacts.
     # description (str): A description of the pipeline.
+    # parallelism_config (Optional[ParallelismConfiguration]): Parallelism configuration
+    # that is applied to each of the executions of the pipeline. It takes precedence
+    # over the parallelism configuration of the parent pipeline.
     # Returns:
     #   A keyword argument dict for calling create_pipeline.
-    .create_args = function(){
+    .create_args = function(role_arn, description, parallelism_config){
+      pipeline_definition = self$definition()
       kwargs = list(
         PipelineName=self$name,
-        PipelineDefinition=self$definition(),
-        RoleArn=role_arn)
+        RoleArn=role_arn
+      )
+      # If pipeline definition is large, upload to S3 bucket and
+      # provide PipelineDefinitionS3Location to request instead.
+      if (nchar(pipeline_definition) < (1024 * 100)) {
+        kwargs[["PipelineDefinition"]] = pipeline_definition
+      } else {
+        desired_s3_uri = s3_path_join(
+          "s3://", self$sagemaker_session$default_bucket(), self$name
+        )
+        S3Uploader$new()$upload_string_as_file_body(
+          body=pipeline_definition,
+          desired_s3_uri=desired_s3_uri,
+          sagemaker_session=self$sagemaker_session
+        )
+        kwargs[["PipelineDefinitionS3Location"]] = list(
+          "Bucket"=self$sagemaker_session$default_bucket(),
+          "ObjectKey"=self$name
+        )
+      }
+
       update_args(
-        kwargs,
-        PipelineDescription=description
+        kwargs, PipelineDescription=description, ParallelismConfiguration=parallelism_config
       )
       return(kwargs)
     }
@@ -230,7 +282,10 @@ Pipeline = R6Class("Pipeline",
 format_start_parameters = function(parameters){
   if (is.null(parameters))
     return(NULL)
-  return(lapply(names(parameters), function(name) list(Name=name, parameters[[name]])))
+  return(lapply(
+    names(parameters), function(name) list("Name"=name, "Value"=as.character(parameters[[name]]))
+    )
+  )
 }
 
 #' @title Replaces Parameter values in a list of nested Dict[str, Any] with their workflow expression.
@@ -257,16 +312,20 @@ interpolate = function(request_obj,
                         lambda_output_to_step_map){
   if (inherits(obj, c("Expression", "Parameter", "Properties")))
     return(obj$expr)
+
   if (inherits(obj, "CallbackOutput")){
     step_name = callback_output_to_step_map[[obj$output_name]]
-    return(obj$expr(step_name))}
+    return(obj$expr(step_name))
+  }
   if (inherits(obj, "LambdaOutput")){
     step_name = lambda_output_to_step_map[[obj$output_name]]
-    return(obj$expr(step_name))}
+    return(obj$expr(step_name))
+  }
   if (is_list_named(obj)){
     new = obj
     for (key in names(obj)){
-      new[[key]] = interpolate(value, callback_output_to_step_map, lambda_output_to_step_map)}
+      new[[key]] = interpolate(value, callback_output_to_step_map, lambda_output_to_step_map)
+    }
   } else if (is.list(obj)){
     new = lapply(obj,
       function(value) interpolate(value, callback_output_to_step_map, lambda_output_to_step_map)
@@ -284,9 +343,11 @@ interpolate = function(request_obj,
   callback_output_map = list()
   for (step in steps){
     if (inherits(step, "CallbackStep")){
-      if (!is.null(step$outputs))
-        for (output in step$outputs)
+      if (!is.null(step$outputs)) {
+        for (output in step$outputs) {
           callback_output_map[[output$output_name]] = step$name
+        }
+      }
     }
   }
   return(callback_output_map)
@@ -316,10 +377,13 @@ interpolate = function(request_obj,
 #     kwargs: key, value pairs to update the args dict with.
 update_args = function(args, ...){
   kwargs = list(...)
+  args_name = deparse(substitute(args))
   for (key in names(kwargs)){
-    if(!is.null(value))
-      assign("args", modifyList(args, list(key=kwargs[[key]])), envir = parent.env(environment()))
+    if(!is.null(kwargs[[key]])){
+      args = modifyList(args, setNames(list(kwargs[[key]]), key))
+    }
   }
+  assign(args_name, args, envir = parent.frame())
 }
 
 #' @title Workflow .PipeLineExecution class
@@ -346,7 +410,7 @@ update_args = function(args, ...){
     initialize = function(arn,
                           sagemaker_session=NULL){
       self$arn = arn
-      self$sagemaker_session = sagemaker_session %||% sagemaker.common::Session$new()
+      self$sagemaker_session = sagemaker_session %||% sagemaker.core::Session$new()
     },
 
     #' @description Stops a pipeline execution.
@@ -411,7 +475,7 @@ update_args = function(args, ...){
           flush(stdout())
           message = sprintf("Error for %s: Failed. Reason: %s",
             response[["PipelineArn"]], response[["FailureReason"]] %||% "(No reason provided)")
-          sagemaker.common::UnexpectedStatusError$new(message)
+          sagemaker.core::UnexpectedStatusError$new(message)
         }
         Sys.sleep(delay)
       }

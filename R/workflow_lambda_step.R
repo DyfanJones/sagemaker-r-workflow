@@ -3,11 +3,10 @@
 
 #' @include workflow_entities.R
 #' @include workflow_properties.R
-#' @include workflow_entities.R
+#' @include workflow_steps.R
 
 #' @import R6
-#' @import sagemaker.common
-
+#' @import sagemaker.core
 
 #' @title LambdaOutput type enum.
 #' @export
@@ -85,6 +84,8 @@ LambdaStep = R6Class("LambdaStep",
     #' @param lambda_func (str): An instance of sagemaker.lambda_helper.Lambda.
     #'              If lambda arn is specified in the instance, LambdaStep just invokes the function,
     #'              else lambda function will be created while creating the pipeline.
+    #' @param display_name (str): The display name of the Lambda step.
+    #' @param description (str): The description of the Lambda step.
     #' @param inputs (dict): Input arguments that will be provided
     #'              to the lambda function.
     #' @param outputs (List[LambdaOutput]): List of outputs from the lambda function.
@@ -93,11 +94,25 @@ LambdaStep = R6Class("LambdaStep",
     #'              depends on
     initialize = function(name,
                           lambda_func,
+                          display_name=NULL,
+                          description=NULL,
                           inputs=NULL,
                           outputs=NULL,
                           cache_config=NULL,
                           depends_on=NULL){
-      super$initialize(name, StepTypeEnum$LAMBDA, depends_on)
+      stopifnot(
+        is.character(name),
+        is.character(lambda_func),
+        is.null(display_name) || is.character(display_name),
+        is.null(description) || is.character(description),
+        is.null(inputs) || is.list(inputs),
+        is.null(outputs) || is.list(outputs),
+        is.null(cache_config) || inherits(cache_config, "CacheConfig"),
+        is.null(depends_on) || is.list(depends_on)
+      )
+      super$initialize(
+        name, display_name, description, StepTypeEnum$LAMBDA, depends_on
+      )
       self$lambda_func = lambda_func
       self$outputs = outputs %||% list()
       self$cache_config = cache_config
@@ -146,7 +161,6 @@ LambdaStep = R6Class("LambdaStep",
     }
   ),
   private = list(
-    .properties = NULL,
 
     # Returns the lamba function arn
     # Method creates a lambda function and returns it's arn.

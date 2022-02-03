@@ -31,12 +31,11 @@ Creates a Transformer step collection for workflow.
 Construct steps required for a Transformer step collection:
              An estimator-centric step collection. It models what happens in workflows
              when invoking the `transform()` method on an estimator instance:
-             First, if custom
-             model artifacts are required, a `_RepackModelStep` is included.
+             First, if custom model artifacts are required, a `_RepackModelStep` is included.
              Second, a `CreateModelStep` with the model data passed in from
              a training step or other training job output. Finally, a `TransformerStep`.
-             If repacking the model artifacts is not necessary, only the
-             CreateModelStep and TransformerStep are in the step collection.
+             If repacking the model artifacts is not necessary, only the CreateModelStep
+             and TransformerStep are in the step collection.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{EstimatorTransformer$new(
   name,
@@ -46,6 +45,8 @@ Construct steps required for a Transformer step collection:
   instance_count,
   instance_type,
   transform_inputs,
+  description = NULL,
+  display_name = NULL,
   image_uri = NULL,
   predictor_cls = NULL,
   env = NULL,
@@ -59,6 +60,9 @@ Construct steps required for a Transformer step collection:
   tags = NULL,
   volume_kms_key = NULL,
   depends_on = NULL,
+  repack_model_step_retry_policies = NULL,
+  model_step_retry_policies = NULL,
+  transform_step_retry_policies = NULL,
   ...
 )}\if{html}{\out{</div>}}
 }
@@ -70,19 +74,28 @@ Construct steps required for a Transformer step collection:
 
 \item{\code{estimator}}{: The estimator instance.}
 
-\item{\code{model_data}}{: The S3 uri to the model data from training.}
+\item{\code{model_data}}{(str): The S3 location of a SageMaker model data
+``.tar.gz`` file (default: None).}
 
-\item{\code{model_inputs}}{: Placeholder}
+\item{\code{model_inputs}}{(CreateModelInput): A `sagemaker.inputs.CreateModelInput` instance.
+Defaults to `None`.}
 
 \item{\code{instance_count}}{(int): The number of EC2 instances to use.}
 
 \item{\code{instance_type}}{(str): The type of EC2 instance to use.}
 
-\item{\code{transform_inputs}}{: Placeholder}
+\item{\code{transform_inputs}}{(TransformInput): A `sagemaker.inputs.TransformInput` instance.}
 
-\item{\code{image_uri}}{: Placeholder}
+\item{\code{description}}{(str): The description of the step.}
 
-\item{\code{predictor_cls}}{: Placeholder}
+\item{\code{display_name}}{(str): The display name of the step.}
+
+\item{\code{image_uri}}{(str): A Docker image URI.}
+
+\item{\code{predictor_cls}}{(callable[string, :Session]): A
+function to call to create a predictor (default: None). If not
+None, ``deploy`` will return the result of invoking this
+function on the created endpoint name.}
 
 \item{\code{env}}{(dict): The Environment variables to be set for use during the
 transform job (default: None).}
@@ -104,16 +117,28 @@ transform output (default: None).}
 the inference endpoint. If it is supported by the endpoint,
 it will be the format of the batch transform output.}
 
-\item{\code{max_concurrent_transforms}}{: Placeholder}
+\item{\code{max_concurrent_transforms}}{(int): The maximum number of HTTP requests
+to be made to each individual transform container at one time.}
 
-\item{\code{max_payload}}{: Placeholder}
+\item{\code{max_payload}}{(int): Maximum size of the payload in a single HTTP}
 
-\item{\code{tags}}{: Placeholder}
+\item{\code{tags}}{(list[dict]): List of tags for labeling a training job. For
+more, see \url{https://docs.aws.amazon.com/sagemaker/latest/dg/API_Tag.html}.}
 
-\item{\code{volume_kms_key}}{: Placeholder}
+\item{\code{volume_kms_key}}{(str): Optional. KMS key ID for encrypting the volume
+attached to the ML compute instance (default: None).}
 
-\item{\code{depends_on}}{(List[str]): The list of step names the first step in
-the collection depends on}
+\item{\code{depends_on}}{(List[str] or List[Step]): The list of step names or step instances
+the first step in the collection depends on}
+
+\item{\code{repack_model_step_retry_policies}}{(List[RetryPolicy]): The list of retry policies
+for the repack model step}
+
+\item{\code{model_step_retry_policies}}{(List[RetryPolicy]): The list of retry policies for
+model step}
+
+\item{\code{transform_step_retry_policies}}{(List[RetryPolicy]): The list of retry policies for
+transform step}
 
 \item{\code{...}}{: pass onto model class.}
 }

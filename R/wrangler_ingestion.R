@@ -2,8 +2,8 @@
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/wrangler/ingestion.py
 
 #' @import R6
-#' @import sagemaker.common
-#' @import uuid
+#' @import sagemaker.core
+#' @importFrom uuid UUIDgenerate
 
 #' @title generate data ingestion flow from s3 input
 #' @description Generate the data ingestion only flow from s3 input
@@ -16,6 +16,7 @@
 #' @return dict (typing.Dict): A flow only conduct data ingestion with 1-1 mapping
 #'              output_name (str): The output name used to configure
 #'              `sagemaker.processing.FeatureStoreOutput`
+#' @export
 generate_data_ingestion_flow_from_s3_input = function(input_name,
                                                       s3_uri,
                                                       s3_content_type="csv",
@@ -64,6 +65,7 @@ generate_data_ingestion_flow_from_s3_input = function(input_name,
 #' @return dict (typing.Dict): A flow only conduct data ingestion with 1-1 mapping
 #'              output_name (str): The output name used to configure
 #'              `sagemaker.processing.FeatureStoreOutput`
+#' @export
 generate_data_ingestion_flow_from_athena_dataset_definition = function(input_name,
                                                                        athena_dataset_definition,
                                                                        operator_version="0.1",
@@ -107,6 +109,7 @@ generate_data_ingestion_flow_from_athena_dataset_definition = function(input_nam
 #' @return dict (typing.Dict): A flow only conduct data ingestion with 1-1 mapping
 #'              output_name (str): The output name used to configure
 #'              `sagemaker.processing.FeatureStoreOutput`
+#' @export
 generate_data_ingestion_flow_from_redshift_dataset_definition = function(input_name,
                                                                          redshift_dataset_definition,
                                                                          operator_version="0.1",

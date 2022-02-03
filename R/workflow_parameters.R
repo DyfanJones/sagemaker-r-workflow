@@ -4,8 +4,9 @@
 #' @include workflow_entities.R
 
 #' @import R6
-#' @import sagemaker.common
+#' @import sagemaker.core
 
+# Parameter type enum.
 ParameterTypeEnum = R6Class("ParameterTypeEnum",
   public = list(
 
@@ -171,6 +172,13 @@ ParameterString = R6Class("ParameterString",
         name=name, parameter_type=ParameterTypeEnum$new("STRING"), default_value=default_value
       )
       self$enum_values = enum_values
+    },
+
+    #' @description Get the request structure for workflow service calls.
+    to_request = function(){
+      request_dict = super$to_request()
+      request_dict[["EnumValues"]] = self.enum_values
+      return(request_dict)
     }
   )
 )

@@ -7,7 +7,7 @@
 Training step for workflow.
 }
 \section{Super classes}{
-\code{\link[sagemaker.workflow:Entity]{sagemaker.workflow::Entity}} -> \code{\link[sagemaker.workflow:Step]{sagemaker.workflow::Step}} -> \code{TrainingStep}
+\code{\link[sagemaker.workflow:Entity]{sagemaker.workflow::Entity}} -> \code{\link[sagemaker.workflow:Step]{sagemaker.workflow::Step}} -> \code{\link[sagemaker.workflow:ConfigurableRetryStep]{sagemaker.workflow::ConfigurableRetryStep}} -> \code{TrainingStep}
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -33,6 +33,7 @@ The TrainingJobName and ExperimentConfig attributes cannot be included.}
 \itemize{
 \item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Step" data-id="add_depends_on">}\href{../../sagemaker.workflow/html/Step.html#method-add_depends_on}{\code{sagemaker.workflow::Step$add_depends_on()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Step" data-id="format">}\href{../../sagemaker.workflow/html/Step.html#method-format}{\code{sagemaker.workflow::Step$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="ConfigurableRetryStep" data-id="add_retry_policy">}\href{../../sagemaker.workflow/html/ConfigurableRetryStep.html#method-add_retry_policy}{\code{sagemaker.workflow::ConfigurableRetryStep$add_retry_policy()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -47,9 +48,12 @@ Construct a TrainingStep, given an `EstimatorBase` instance.
 \if{html}{\out{<div class="r">}}\preformatted{TrainingStep$new(
   name,
   estimator,
+  display_name = NULL,
+  description = NULL,
   inputs = NULL,
   cache_config = NULL,
-  depends_on = NULL
+  depends_on = NULL,
+  retry_policies = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -59,6 +63,10 @@ Construct a TrainingStep, given an `EstimatorBase` instance.
 \item{\code{name}}{(str): The name of the training step.}
 
 \item{\code{estimator}}{(EstimatorBase): A `sagemaker.estimator.EstimatorBase` instance.}
+
+\item{\code{display_name}}{(str): The display name of the training step.}
+
+\item{\code{description}}{(str): The description of the training step.}
 
 \item{\code{inputs}}{(str or dict or sagemaker.inputs.TrainingInput
        or sagemaker.inputs.FileSystemInput): Information
@@ -82,6 +90,8 @@ Construct a TrainingStep, given an `EstimatorBase` instance.
 
 \item{\code{depends_on}}{(List[str]): A list of step names this `sagemaker.workflow.steps.TrainingStep`
 depends on}
+
+\item{\code{retry_policies}}{(List[RetryPolicy]):  A list of retry policy}
 }
 \if{html}{\out{</div>}}
 }

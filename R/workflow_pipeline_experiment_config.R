@@ -7,6 +7,7 @@
 #' @include workflow_entities.R
 
 #' @import R6
+#' @import sagemaker.core
 
 #' @title Workflow PipeLineExperimentConfig class
 #' @description Experiment config for SageMaker pipeline.

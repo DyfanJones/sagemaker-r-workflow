@@ -7,7 +7,7 @@
 Transform step for workflow.
 }
 \section{Super classes}{
-\code{\link[sagemaker.workflow:Entity]{sagemaker.workflow::Entity}} -> \code{\link[sagemaker.workflow:Step]{sagemaker.workflow::Step}} -> \code{TransformStep}
+\code{\link[sagemaker.workflow:Entity]{sagemaker.workflow::Entity}} -> \code{\link[sagemaker.workflow:Step]{sagemaker.workflow::Step}} -> \code{\link[sagemaker.workflow:ConfigurableRetryStep]{sagemaker.workflow::ConfigurableRetryStep}} -> \code{TransformStep}
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -33,6 +33,7 @@ TransformJobName and ExperimentConfig cannot be included in the arguments.}
 \itemize{
 \item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Step" data-id="add_depends_on">}\href{../../sagemaker.workflow/html/Step.html#method-add_depends_on}{\code{sagemaker.workflow::Step$add_depends_on()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Step" data-id="format">}\href{../../sagemaker.workflow/html/Step.html#method-format}{\code{sagemaker.workflow::Step$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="ConfigurableRetryStep" data-id="add_retry_policy">}\href{../../sagemaker.workflow/html/ConfigurableRetryStep.html#method-add_retry_policy}{\code{sagemaker.workflow::ConfigurableRetryStep$add_retry_policy()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -48,8 +49,11 @@ Constructs a TransformStep, given an `Transformer` instance.
   name,
   transformer,
   inputs,
+  display_name = NULL,
+  description = NULL,
   cache_config = NULL,
-  depends_on = NULL
+  depends_on = NULL,
+  retry_policies = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -62,10 +66,16 @@ Constructs a TransformStep, given an `Transformer` instance.
 
 \item{\code{inputs}}{(TransformInput): A `sagemaker.inputs.TransformInput` instance.}
 
+\item{\code{display_name}}{(str): The display name of the transform step.}
+
+\item{\code{description}}{(str): The description of the transform step.}
+
 \item{\code{cache_config}}{(CacheConfig):  A `sagemaker.workflow.steps.CacheConfig` instance.}
 
 \item{\code{depends_on}}{(List[str]): A list of step names this `sagemaker.workflow.steps.TransformStep`
-depends on}
+depends on.}
+
+\item{\code{retry_policies}}{(List[RetryPolicy]):  A list of retry policy}
 }
 \if{html}{\out{</div>}}
 }

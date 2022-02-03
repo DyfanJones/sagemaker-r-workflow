@@ -7,7 +7,7 @@
 Tuning step for workflow.
 }
 \section{Super classes}{
-\code{\link[sagemaker.workflow:Entity]{sagemaker.workflow::Entity}} -> \code{\link[sagemaker.workflow:Step]{sagemaker.workflow::Step}} -> \code{TuningStep}
+\code{\link[sagemaker.workflow:Entity]{sagemaker.workflow::Entity}} -> \code{\link[sagemaker.workflow:Step]{sagemaker.workflow::Step}} -> \code{\link[sagemaker.workflow:ConfigurableRetryStep]{sagemaker.workflow::ConfigurableRetryStep}} -> \code{TuningStep}
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -37,6 +37,7 @@ The HyperParameterTuningJobName attribute cannot be included.}
 \itemize{
 \item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Step" data-id="add_depends_on">}\href{../../sagemaker.workflow/html/Step.html#method-add_depends_on}{\code{sagemaker.workflow::Step$add_depends_on()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Step" data-id="format">}\href{../../sagemaker.workflow/html/Step.html#method-format}{\code{sagemaker.workflow::Step$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="ConfigurableRetryStep" data-id="add_retry_policy">}\href{../../sagemaker.workflow/html/ConfigurableRetryStep.html#method-add_retry_policy}{\code{sagemaker.workflow::ConfigurableRetryStep$add_retry_policy()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -51,10 +52,13 @@ Construct a TuningStep, given a `HyperparameterTuner` instance.
 \if{html}{\out{<div class="r">}}\preformatted{TuningStep$new(
   name,
   tuner,
+  display_name = NULL,
+  description = NULL,
   inputs = NULL,
   job_arguments = NULL,
   cache_config = NULL,
-  depends_on = NULL
+  depends_on = NULL,
+  retry_policies = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -64,6 +68,10 @@ Construct a TuningStep, given a `HyperparameterTuner` instance.
 \item{\code{name}}{(str): The name of the tuning step.}
 
 \item{\code{tuner}}{(HyperparameterTuner): A `sagemaker.tuner.HyperparameterTuner` instance.}
+
+\item{\code{display_name}}{(str): The display name of the tuning step.}
+
+\item{\code{description}}{(str): The description of the tuning step.}
 
 \item{\code{inputs}}{: Information about the training data. Please refer to the
       ``fit()`` method of the associated estimator, as this can take
@@ -99,8 +107,10 @@ Defaults to `None`.}
 
 \item{\code{cache_config}}{(CacheConfig):  A `sagemaker.workflow.steps.CacheConfig` instance.}
 
-\item{\code{depends_on}}{(List[str]): A list of step names this `sagemaker.workflow.steps.ProcessingStep`
-depends on}
+\item{\code{depends_on}}{(List[str] or List[Step]): A list of step names or step instance
+this `sagemaker.workflow.steps.ProcessingStep` depends on}
+
+\item{\code{retry_policies}}{(List[RetryPolicy]):  A list of retry policy}
 }
 \if{html}{\out{</div>}}
 }
