@@ -11,9 +11,10 @@ Imports:
     lgr,
     jsonlite,
     methods,
+    digest,
     processx,
-    paws,
     R6,
+    sagemaker.core,
     sagemaker.common,
     sagemaker.mlcore,
     sagemaker.mlframework,
@@ -22,31 +23,40 @@ Imports:
 Suggests:
     crayon,
     testthat
-Remotes: 
+Remotes:
+    DyfanJones/sagemaker-r-core,
     DyfanJones/sagemaker-r-common,
     DyfanJones/sagemaker-r-mlcore,
     DyfanJones/sagemaker-r-mlframework
 License: Apache License (>= 2.0)
 Encoding: UTF-8
 RoxygenNote: 7.1.2
-Collate:
+Collate: 
     'r_utils.R'
+    'workflow_utilities.R'
     'workflow_entities.R'
-    'workflow_functions.R'
+    'workflow_retry.R'
     'workflow_properties.R'
+    'workflow_functions.R'
     'workflow_steps.R'
     'workflow__utils.R'
     'workflow_airflow.R'
     'workflow_callback_step.R'
-    'workflow_utilities.R'
+    'workflow_check_job_config.R'
+    'workflow_clarify_check_step.R'
     'workflow_step_collections.R'
     'workflow_parameters.R'
     'workflow_execution_variables.R'
     'workflow_conditions.R'
     'workflow_condition_step.R'
+    'workflow_emr_step.R'
     'workflow_lambda_step.R'
+    'workflow_parallelism_config.R'
     'workflow_pipeline_experiment_config.R'
     'workflow_pipeline.R'
+    'workflow_quality_check_step.R'
     'wrangler_ingestion.R'
     'wrangler_processing.R'
     'zzz.R'
+Depends: 
+    R (>= 2.10)
