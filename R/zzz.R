@@ -1,7 +1,6 @@
 #' r6 sagemaker: this is just a placeholder
 #'
 #' @import R6
-#' @import paws
 #' @import jsonlite
 #' @import lgr
 "_PACKAGE"
