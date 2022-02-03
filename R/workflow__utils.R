@@ -8,9 +8,11 @@
 
 #' @import fs
 #' @import R6
+#' @import sagemaker.core
 #' @import sagemaker.common
 #' @import sagemaker.mlcore
 #' @import sagemaker.mlframework
+#' @importFrom utils untar
 
 FRAMEWORK_VERSION = "0.23-1"
 INSTANCE_TYPE = "ml.m5.large"
@@ -18,7 +20,7 @@ REPACK_SCRIPT = "_repack_model.py"
 
 #' @title Workflow .RepackModelStep class
 #' @description Repacks model artifacts with inference entry point.
-#' @keywords internal
+#' @noRd
 .RepackModelStep = R6Class(".RepackModelStep",
   inherit = TrainingStep,
   public = list(
@@ -47,18 +49,45 @@ REPACK_SCRIPT = "_repack_model.py"
     #' execution role
     role = NULL,
 
-    #' @description Constructs a TrainingStep, given an `EstimatorBase` instance.
-    #'              In addition to the estimator instance, the other arguments are those that are supplied to
-    #'              the `fit` method of the `sagemaker.estimator.Estimator`.
+    #' @description Base class initializer.
     #' @param name (str): The name of the training step.
-    #' @param sagemaker_session (EstimatorBase): A `sagemaker.estimator.EstimatorBase` instance.
-    #' @param role (str) : placeholder
-    #' @param model_data : placeholder
-    #' @param entry_point : placeholder
-    #' @param source_dir : placeholder
-    #' @param dependencies : placeholder
-    #' @param depends_on : placeholder
-    #' @param ... : additional parameters passed `sagemaker.mlframework::SKLearn` class
+    #' @param sagemaker_session (sagemaker.session.Session): Session object which manages
+    #'              interactions with Amazon SageMaker APIs and any other AWS services needed. If
+    #'              not specified, the estimator creates one using the default
+    #'              AWS configuration chain.
+    #' @param role (str): An AWS IAM role (either name or full ARN). The Amazon
+    #'              SageMaker training jobs and APIs that create Amazon SageMaker
+    #'              endpoints use this role to access training data and model
+    #'              artifacts. After the endpoint is created, the inference code
+    #'              might use the IAM role, if it needs to access an AWS resource.
+    #' @param model_data (str): The S3 location of a SageMaker model data
+    #'              ``.tar.gz`` file (default: None).
+    #' @param entry_point (str): Path (absolute or relative) to the local Python
+    #'              source file which should be executed as the entry point to
+    #'              inference. If ``source_dir`` is specified, then ``entry_point``
+    #'              must point to a file located at the root of ``source_dir``.
+    #'              If 'git_config' is provided, 'entry_point' should be
+    #'              a relative location to the Python source file in the Git repo.
+    #'              You can assign entry_point='src/train.py'.
+    #' @param source_dir (str): A relative location to a directory with other training
+    #'              or model hosting source code dependencies aside from the entry point
+    #'              file in the Git repo (default: None). Structure within this
+    #'              directory are preserved when training on Amazon SageMaker.
+    #' @param dependencies (list[str]): A list of paths to directories (absolute
+    #'              or relative) with any additional libraries that will be exported
+    #'              to the container (default: []). The library folders will be
+    #'              copied to SageMaker in the same folder where the entrypoint is
+    #'              copied. If 'git_config' is provided, 'dependencies' should be a
+    #'              list of relative locations to directories with any additional
+    #'              libraries needed in the Git repo.
+    #'              This is not supported with "local code" in Local Mode.
+    #' @param depends_on (List[str] or List[Step]): A list of step names or instances
+    #'              this step depends on
+    #' @param retry_policies (List[RetryPolicy]): The list of retry policies for the current step
+    #' @param subnets (list[str]): List of subnet ids. If not specified, the re-packing
+    #'              job will be created without VPC config.
+    #' @param security_group_ids (list[str]): List of security group ids. If not
+    #'              specified, the re-packing job will be created without VPC config.
     initialize = function(name,
                           sagemaker_session,
                           role,
@@ -67,6 +96,9 @@ REPACK_SCRIPT = "_repack_model.py"
                           source_dir=NULL,
                           dependencies=NULL,
                           depends_on=NULL,
+                          retry_policies=NULL,
+                          subnets=NULL,
+                          security_group_ids=NULL,
                           ...){
       # yeah, go ahead and save the originals for now
       private$.model_data = model_data
@@ -85,26 +117,60 @@ REPACK_SCRIPT = "_repack_model.py"
       private$.source_dir = source_dir
       private$.dependencies = dependencies
 
+      # convert dependencies array into space-delimited string
+      dependencies_hyperparameter = NULL
+      if (!is.null(private$.dependencies))
+        dependencies_hyperparameter = paste(private$.dependencies, collapse = " ")
+
       # the real estimator and inputs
       repacker = sagemaker.mlframework::SKLearn$new(
         framework_version=FRAMEWORK_VERSION,
         instance_type=INSTANCE_TYPE,
         entry_point=REPACK_SCRIPT,
-        source_dir=private$.ource_dir,
+        source_dir=private$.source_dir,
         dependencies=private$.dependencies,
         sagemaker_session=self$sagemaker_session,
         role=self$role,
         hyperparameters=list(
           "inference_script"=private$.entry_point_basename,
-          "model_archive"=private$.model_archive),
+          "model_archive"=private$.model_archive,
+          "dependencies"=dependencies_hyperparameter,
+          "source_dir"= private$.source_dir
+        ),
+        subnets=subnets,
+        security_group_ids=security_group_ids,
         ...
       )
       repacker$disable_profiler = TRUE
-      inputs = sagemaker.common::TrainingInput$new(private$.model_prefix)
+      inputs = sagemaker.core::TrainingInput$new(private$.model_prefix)
 
       super$initialize(
-        name=name, depends_on=depends_on, estimator=repacker, inputs=inputs
+        name=name,
+        display_name=display_name,
+        description=description,
+        depends_on=depends_on,
+        retry_policies=retry_policies,
+        estimator=repacker,
+        inputs=inputs
       )
+    }
+  ),
+  active = list(
+
+    #' @field arguments
+    #'        The arguments dict that are used to call `create_training_job`.
+    #'        This first prepares the source bundle for repackinglby placing artifacts
+    #'        in locations which the training container will make available to the
+    #'        repacking script and then gets the arguments for the training job.
+    arguments = function(){
+      private$.prepare_for_repacking()
+      return(super$arguments)
+    },
+
+    #' @field properties
+    #'        A Properties object representing the DescribeTrainingJobResponse data model.
+    properties = function(){
+      return(private$.properties)
     }
   ),
   private = list(
@@ -132,7 +198,7 @@ REPACK_SCRIPT = "_repack_model.py"
     #   4) sets the source dir for the repacking estimator
     .establish_source_dir = function(){
       private$.source_dir = tempfile()
-      self.estimator.source_dir = self._source_dir
+      self$estimator.source_dir = private$.source_dir
 
       fs::file_copy(private$.entry_point, fs::path(private$.source_dir, private$.entry_point_basename))
       private$.entry_point = private$.entry_point_basename
@@ -146,14 +212,42 @@ REPACK_SCRIPT = "_repack_model.py"
     # If the source_dir is a local path:
     #   1) copies the _repack_model.py script into the source dir
     .inject_repack_script = function(){
+      fname = system.file("sagemaker", "workflow", REPACK_SCRIPT, package="sagemaker.workflow")
+      if (startsWith(tolower(private$.source_dir), "s3://")){
+        tmp = tempdir()
+        local_path = fs::path(tmp, "local.tar.gz")
 
+        S3Downloader$new()$download(
+          s3_uri=private$.source_dir,
+          local_path=local_path,
+          sagemaker_session=self$sagemaker_session
+        )
+
+        src_dir = fs::path(tmp, "src")
+        utils::untar(local_path, exdir = src_dir)
+
+        fs::file_copy(fname, fs::path(src_dir, REPACK_SCRIPT))
+        sagemaker.core::create_tar_file(src_dir, local_path)
+
+        S3Uploader$new()$upload(
+          local_path=local_path,
+          desired_s3_uri=private$.source_dir,
+          sagemaker_session=self$sagemaker_session,
+        )
+        on.exit({
+          fs::file_delete(local_path)
+          fs::dir_delete(src_dir)
+        })
+      } else {
+          fs::file_copy(fname, fs::path(private$.source_dir, REPACK_SCRIPT))
+      }
     }
   )
 )
 
 #' @title Workflow .RegisterModelStep class
 #' @description Register model step in workflow that creates a model package.
-#' @keywords interal
+#' @noRd
 .RegisterModelStep = R6Class(".RegisterModelStep",
   inherit = Step,
   public = list(
@@ -185,6 +279,7 @@ REPACK_SCRIPT = "_repack_model.py"
     #'              depends on
     #' @param tags : Placeholder
     #' @param container_def_list (list): A list of containers.
+    #' @param drift_check_baselines : Placeholder
     #' @param ... : additional arguments to `create_model`.
     initialize = function(name,
                           content_types,
@@ -203,6 +298,7 @@ REPACK_SCRIPT = "_repack_model.py"
                           depends_on=NULL,
                           tags=NULL,
                           container_def_list=NULL,
+                          drift_check_baselines=NULL,
                           ...){
       kwargs = list(...)
       super$initialize(name, StepTypeEnum$REGISTER_MODEL, depends_on)
@@ -214,6 +310,7 @@ REPACK_SCRIPT = "_repack_model.py"
       self$transform_instances = transform_instances
       self$model_package_group_name = model_package_group_name
       self$model_metrics = model_metrics
+      self$drift_check_baselines = drift_check_baselines
       self$metadata_properties = metadata_properties
       self$approval_status = approval_status
       self$image_uri = image_uri
@@ -253,16 +350,20 @@ REPACK_SCRIPT = "_repack_model.py"
             kwargs = c(image_uri=self$image_uri ,self$kwargs)
             model = do.call(self$estimator$create_model, kwargs)
           } else {
-            model = do.call(self$estimator.create_model, self$kwargs)
+            model = do.call(self$estimator$create_model, self$kwargs)
             self$image_uri = model$image_uri
           }
+
+          if(is.null(self$model_data))
+            self$model_data = model$model_data
+
           # reset placeholder
-          self.estimator.output_path = output_path
+          self$estimator$output_path = output_path
 
           # yeah, there is some framework stuff going on that we need to pull in here
           if (is.null(self$image_uri)){
             region_name = self$estimator$sagemaker_session$paws_region_name
-            self$image_uri = ImageUris$new()$retrieve(
+            self$image_uri = sagemaker.core::ImageUris$new()$retrieve(
               attr(model, "_framework_name"),
               region_name,
               version=model$framework_version,
@@ -284,6 +385,7 @@ REPACK_SCRIPT = "_repack_model.py"
         model_data=self$model_data,
         image_uri=self$image_uri,
         model_metrics=self$model_metrics,
+        drift_check_baselines=self$drift_check_baselines,
         metadata_properties=self$metadata_properties,
         approval_status=self$approval_status,
         description=self$description,
@@ -291,7 +393,8 @@ REPACK_SCRIPT = "_repack_model.py"
         container_def_list=self$container_def_list
       )
       request_dict = do.call(
-        Session$private_methods$.get_create_model_package_request, model_package_args
+        sagemaker.core::Session$private_methods$.get_create_model_package_request,
+        model_package_args
       )
       # these are not available in the workflow service and will cause rejection
       if ("CertifyForMarketplace" %in% names(request_dict))

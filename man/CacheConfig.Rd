@@ -17,6 +17,7 @@ Configuration class to enable caching in pipeline workflow.
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-inititialize}{\code{CacheConfig$inititialize()}}
+\item \href{#method-format}{\code{CacheConfig$format()}}
 \item \href{#method-clone}{\code{CacheConfig$clone()}}
 }
 }
@@ -45,6 +46,16 @@ Value should be an ISO 8601 duration string. Defaults to `NULL`.}
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-format"></a>}}
+\if{latex}{\out{\hypertarget{method-format}{}}}
+\subsection{Method \code{format()}}{
+format class
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{CacheConfig$format()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

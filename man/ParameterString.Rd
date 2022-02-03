@@ -13,6 +13,7 @@ Pipeline string parameter for workflow.
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{ParameterString$new()}}
+\item \href{#method-to_request}{\code{ParameterString$to_request()}}
 \item \href{#method-clone}{\code{ParameterString$clone()}}
 }
 }
@@ -20,7 +21,6 @@ Pipeline string parameter for workflow.
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
 \item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Entity" data-id="format">}\href{../../sagemaker.workflow/html/Entity.html#method-format}{\code{sagemaker.workflow::Entity$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Parameter" data-id="to_request">}\href{../../sagemaker.workflow/html/Parameter.html#method-to_request}{\code{sagemaker.workflow::Parameter$to_request()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -44,6 +44,16 @@ Create a pipeline string parameter.
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-to_request"></a>}}
+\if{latex}{\out{\hypertarget{method-to_request}{}}}
+\subsection{Method \code{to_request()}}{
+Get the request structure for workflow service calls.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ParameterString$to_request()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

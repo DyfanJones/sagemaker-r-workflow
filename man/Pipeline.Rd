@@ -90,7 +90,12 @@ Gets the request structure for workflow service calls.
 \subsection{Method \code{create()}}{
 Creates a Pipeline in the Pipelines service.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Pipeline$create(role_arn, description = NULL, tags = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Pipeline$create(
+  role_arn,
+  description = NULL,
+  tags = NULL,
+  parallelism_config = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -102,6 +107,10 @@ Creates a Pipeline in the Pipelines service.
 
 \item{\code{tags}}{(List[Dict[str, str]]): A list of {"Key": "string", "Value": "string"} dicts as
 tags.}
+
+\item{\code{parallelism_config}}{(Optional[ParallelismConfiguration]): Parallelism configuration
+that is applied to each of the executions of the pipeline. It takes precedence
+over the parallelism configuration of the parent pipeline.}
 }
 \if{html}{\out{</div>}}
 }
@@ -129,7 +138,7 @@ Response dict from the service. See `boto3 client documentation
 \subsection{Method \code{update()}}{
 Updates a Pipeline in the Workflow service.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Pipeline$update(role_arn, description = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Pipeline$update(role_arn, description = NULL, parallelism_config = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -138,6 +147,10 @@ Updates a Pipeline in the Workflow service.
 \item{\code{role_arn}}{(str): The role arn that is assumed by pipelines to create step artifacts.}
 
 \item{\code{description}}{(str): A description of the pipeline.}
+
+\item{\code{parallelism_config}}{(Optional[ParallelismConfiguration]): Parallelism configuration
+that is applied to each of the executions of the pipeline. It takes precedence
+over the parallelism configuration of the parent pipeline.}
 }
 \if{html}{\out{</div>}}
 }
@@ -151,7 +164,12 @@ A response dict from the service.
 \subsection{Method \code{upsert()}}{
 Creates a pipeline or updates it, if it already exists.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Pipeline$upsert(role_arn, description = NULL, tags = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Pipeline$upsert(
+  role_arn,
+  description = NULL,
+  tags = NULL,
+  parallelism_config = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -163,6 +181,9 @@ Creates a pipeline or updates it, if it already exists.
 
 \item{\code{tags}}{(List[Dict[str, str]]): A list of {"Key": "string", "Value": "string"} dicts as
 tags.}
+
+\item{\code{parallelism_config}}{(Optional[Config for parallel steps, Parallelism configuration that
+is applied to each of. the executions}
 }
 \if{html}{\out{</div>}}
 }
@@ -192,7 +213,8 @@ Starts a Pipeline execution in the Workflow service.
 \if{html}{\out{<div class="r">}}\preformatted{Pipeline$start(
   parameters = NULL,
   execution_display_name = NULL,
-  execution_description = NULL
+  execution_description = NULL,
+  parallelism_config = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -205,6 +227,10 @@ pipeline parameters.}
 \item{\code{execution_display_name}}{(str): The display name of the pipeline execution.}
 
 \item{\code{execution_description}}{(str): A description of the execution.}
+
+\item{\code{parallelism_config}}{(Optional[ParallelismConfiguration]): Parallelism configuration
+that is applied to each of the executions of the pipeline. It takes precedence
+over the parallelism configuration of the parent pipeline.}
 }
 \if{html}{\out{</div>}}
 }

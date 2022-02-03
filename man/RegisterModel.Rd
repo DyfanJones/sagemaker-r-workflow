@@ -39,14 +39,18 @@ Construct steps `_RepackModelStep` and `_RegisterModelStep` based on the estimat
   estimator = NULL,
   model_data = NULL,
   depends_on = NULL,
+  repack_model_step_retry_policies = NULL,
+  register_model_step_retry_policies = NULL,
   model_package_group_name = NULL,
   model_metrics = NULL,
   approval_status = NULL,
   image_uri = NULL,
   compile_model_family = NULL,
+  display_name = NULL,
   description = NULL,
   tags = NULL,
   model = NULL,
+  drift_check_baselines = NULL,
   ...
 )}\if{html}{\out{</div>}}
 }
@@ -66,12 +70,18 @@ generate inferences in real-time (default: None).}
 \item{\code{transform_instances}}{(list): A list of the instance types on which a transformation
 job can be run or on which an endpoint can be deployed (default: None).}
 
-\item{\code{estimator}}{: The estimator instance.}
+\item{\code{estimator}}{The estimator instance.}
 
-\item{\code{model_data}}{: The S3 uri to the model data from training.}
+\item{\code{model_data}}{The S3 uri to the model data from training.}
 
-\item{\code{depends_on}}{(List[str]): The list of step names the first step in the collection
-depends on}
+\item{\code{depends_on}}{(List[str] or List[Step]): The list of step names or step instances
+the first step in the collection depends on}
+
+\item{\code{repack_model_step_retry_policies}}{(List[RetryPolicy]): The list of retry policies
+for the repack model step}
+
+\item{\code{register_model_step_retry_policies}}{(List[RetryPolicy]): The list of retry policies
+for register model step}
 
 \item{\code{model_package_group_name}}{(str): The Model Package Group name, exclusive to
 `model_package_name`, using `model_package_group_name` makes the Model Package
@@ -88,6 +98,8 @@ Estimator's training container image is used (default: None).}
 \item{\code{compile_model_family}}{(str): The instance family for the compiled model. If
 specified, a compiled model is used (default: None).}
 
+\item{\code{display_name}}{(str): The display name of the step.}
+
 \item{\code{description}}{(str): Model Package description (default: None).}
 
 \item{\code{tags}}{(List[dict[str, str]]): The list of tags to attach to the model package group. Note
@@ -97,6 +109,8 @@ tags will not be applied.}
 
 \item{\code{model}}{(object or Model): A PipelineModel object that comprises a list of models
 which gets executed as a serial inference pipeline or a Model object.}
+
+\item{\code{drift_check_baselines}}{(DriftCheckBaselines): DriftCheckBaselines object (default: None).}
 
 \item{\code{...}}{: additional arguments to `create_model`.}
 }

@@ -45,7 +45,12 @@ Properties for use in workflow expressions.
 \subsection{Method \code{new()}}{
 Create a Properties instance representing the given shape.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Properties$new(path, shape_name = NULL, shape_names = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Properties$new(
+  path,
+  shape_name = NULL,
+  shape_names = NULL,
+  service_name = "sagemaker"
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -56,6 +61,8 @@ Create a Properties instance representing the given shape.
 \item{\code{shape_name}}{(str): The botocore sagemaker service model shape name.}
 
 \item{\code{shape_names}}{(str): A List of the botocore sagemaker service model shape name.}
+
+\item{\code{service_name}}{(str):}
 }
 \if{html}{\out{</div>}}
 }

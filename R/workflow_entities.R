@@ -2,17 +2,17 @@
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/workflow/entities.py
 
 #' @import R6
-#' @import sagemaker.common
+#' @import sagemaker.core
 
 #' @title Base object for workflow entities.
 #' @description Entities must implement the to_request method.
-#' @keywords internal
+#' @noRd
 Entity = R6Class("Entity",
   public = list(
 
     #' @description Get the request structure for workflow service calls.
     to_request = function(){
-      sagemaker.common::NotImplementedError$new()
+      NotImplementedError$new()
     },
 
     #' @description format class
@@ -22,7 +22,7 @@ Entity = R6Class("Entity",
   )
 )
 
-
+# An EnumMeta which defaults to the first value in the Enum list
 DefaultEnumMeta = R6Class("DefaultEnumMeta",
   public = list(
     default = NULL,
@@ -36,7 +36,7 @@ DefaultEnumMeta = R6Class("DefaultEnumMeta",
 
 #' @title Base object for expressions.
 #' @description Expressions must implement the expr property.
-#' @keywords internal
+#' @noRd
 Expression = R6Class("Expression",
   public = list(
 

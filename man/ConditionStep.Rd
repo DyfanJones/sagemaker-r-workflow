@@ -4,7 +4,8 @@
 \alias{ConditionStep}
 \title{Workflow ConditionStep class}
 \description{
-Conditional step for pipelines to support conditional branching in the execution of steps.
+Conditional step for pipelines to support conditional
+             branching in the execution of steps.
 }
 \section{Super classes}{
 \code{\link[sagemaker.workflow:Entity]{sagemaker.workflow::Entity}} -> \code{\link[sagemaker.workflow:Step]{sagemaker.workflow::Step}} -> \code{ConditionStep}
@@ -59,6 +60,8 @@ Construct a ConditionStep for pipelines to support conditional branching.
 \if{html}{\out{<div class="r">}}\preformatted{ConditionStep$new(
   name,
   depends_on = NULL,
+  display_name = NULL,
+  description = NULL,
   conditions = NULL,
   if_steps = NULL,
   else_steps = NULL
@@ -71,6 +74,10 @@ Construct a ConditionStep for pipelines to support conditional branching.
 \item{\code{name}}{(str): The name of the step.}
 
 \item{\code{depends_on}}{(List[str]): The list of step names the current step depends on}
+
+\item{\code{display_name}}{(str): The display name of the condition step.}
+
+\item{\code{description}}{(str): The description of the condition step.}
 
 \item{\code{conditions}}{(List[Condition]): A list of `sagemaker.workflow.conditions.Condition`
 instances.}

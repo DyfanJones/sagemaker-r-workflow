@@ -17,6 +17,8 @@ Pipeline step for workflow.
 \item{\code{step_type}}{The type of the step.}
 
 \item{\code{depends_on}}{The list of step names the current step depends on}
+
+\item{\code{retry_policies}}{(List[RetryPolicy]): The custom retry policy configuration}
 }
 \if{html}{\out{</div>}}
 }
@@ -53,7 +55,13 @@ Pipeline step for workflow.
 \subsection{Method \code{new()}}{
 Initialize Workflow Step
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Step$new(name, step_type = enum_items(StepTypeEnum), depends_on = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Step$new(
+  name,
+  display_name = NULL,
+  description = NULL,
+  step_type = enum_items(StepTypeEnum),
+  depends_on = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -61,9 +69,14 @@ Initialize Workflow Step
 \describe{
 \item{\code{name}}{(str): The name of the step.}
 
+\item{\code{display_name}}{(str): The display name of the step.}
+
+\item{\code{description}}{(str): The description of the step.}
+
 \item{\code{step_type}}{(StepTypeEnum): The type of the step.}
 
-\item{\code{depends_on}}{(List[str]): The list of step names the current step depends on}
+\item{\code{depends_on}}{(List[str] or List[Step]): The list of step names or step
+instances the current step depends on}
 }
 \if{html}{\out{</div>}}
 }

@@ -5,8 +5,8 @@
 #' @include r_utils.R
 
 #' @import R6
-#' @import sagemaker.common
-#' @importFrom jsonlite read_json
+#' @import sagemaker.core
+#' @importFrom jsonlite fromJSON
 #' @importFrom fs path
 
 #' @title Workflow PropertiesMeta Class
@@ -20,7 +20,10 @@ PropertiesMeta = R6Class("PropertiesMeta",
     initialize = function(...){
       kwargs = list(...)
       if(is.null(private$.shapes)){
-        private$.shapes = properties_env$sagemaker_model[["shapes"]]
+        private$.shapes_map = list(
+          sagemaker = sagemaker_service,
+          emr = emr_service
+        )
       }
     },
 
@@ -30,22 +33,11 @@ PropertiesMeta = R6Class("PropertiesMeta",
     }
   ),
   private = list(
-    .shapes = NULL,
+    .shapes_map = NULL,
     .primitive_types = c("string", "boolean", "integer", "float")
   ),
   lock_objects = F
 )
-
-.load_service_model = function(){
-  path = system.file(
-    fs::path("sagemaker", "2017-07-24", "service-2.json"),
-    package = "sagemaker.workflow")
-  return(jsonlite::read_json(path))
-}
-
-# cache internal attribute from botocore sagemaker service model
-properties_env = new.env(parent = emptyenv())
-properties_env$sagemaker_model = .load_service_model()
 
 #' @title Workflow Properties Class
 #' @description Properties for use in workflow expressions.
@@ -66,9 +58,11 @@ Properties = R6Class("Properties",
     #' @param path (str): The parent path of the Properties instance.
     #' @param shape_name (str): The botocore sagemaker service model shape name.
     #' @param shape_names (str): A List of the botocore sagemaker service model shape name.
+    #' @param service_name (str):
     initialize = function(path,
                           shape_name=NULL,
-                          shape_names=NULL){
+                          shape_names=NULL,
+                          service_name="sagemaker"){
       stopifnot(
         is.character(path),
         is.character(shape_name) || is.null(shape_name),
@@ -80,6 +74,7 @@ Properties = R6Class("Properties",
       private$.shape_names = if(is.null(shape_name)) shape_names else c(shape_name, shape_names)
 
       super$initialize()
+      shapes = private$.shapes_map[[service_name]] %||% list()
 
       for (name in private$.shape_names){
         shape = private$.shapes[[name]] %||% list()
@@ -88,13 +83,20 @@ Properties = R6Class("Properties",
           # self$format = function() name
         } else if (shape_type == "structure") {
           members = shape[["members"]]
-          for(i in seq_along(members)){
-            key = names(members[i])
-            info = members[[i]]
+          for(key in names(members)){
+            info = members[[key]]
             if (private$.shapes[[info[["shape"]]]][["type"]] == "list"){
-              self[[key]] = PropertiesList$new(sprintf("%s.%s", path, key), info[["shape"]])
-            } else {
-              self[[key]] = Properties$new(sprintf("%s.%s", path, key), info[["shape"]])
+              self[[key]] = PropertiesList$new(
+                sprintf("%s.%s", path, key), info[["shape"]], service_name
+              )
+            } else if (private$.shapes[[info[["shape"]]]][["type"]] == "map") {
+              self[[key]] = PropertiesMap$new(
+                sprintf("%s.%s", path, key), info[["shape"]], service_name
+              )
+            }else {
+              self[[key]] = Properties$new(
+                sprintf("%s.%s", path, key), info[["shape"]], service_name
+              )
             }
           }
         }
@@ -127,18 +129,21 @@ PropertiesList = R6Class("PropertiesList",
     #' @param path (str): The parent path of the PropertiesList instance.
     #' @param shape_name (str): The botocore sagemaker service model shape name.
     #' @param root_shape_name (str): The botocore sagemaker service model shape name.
+    #' @param service_name (str): The botocore service name.
     initialize = function(path,
-                          shape_name=NULL){
+                          shape_name=NULL,
+                          service_name="sagemaker"){
       super$initialize(path, shape_name)
       self$shape_name = shape_name
+      self$service_name = service_name
       private$.items = list()
     },
 
     #' @description Populate the indexing item with a Property, for both lists and dictionaries.
     #' @param item (Union[int, str]): The index of the item in sequence.
-    get_item = function(){
+    get_item = function(item){
       if (!(item %in% names(private$.items))){
-        shape = Properties$private_fields$ ._shapes.get(self.shape_name)
+        shape = properties_env[[self$sevice_name]][[self$shape_name]]
         member = shape[["member"]][["shape"]]
         if (is.character(item)){
           property_item = Properties$new(
@@ -146,14 +151,68 @@ PropertiesList = R6Class("PropertiesList",
         } else {
           property_item = Properties$new(
             sprintf("%s[%s]", private$.path, item), member)
-          private$.items[[item]] = property_item
         }
+        private$.items[[item]] = property_item
       }
       return(private$.items[[item]])
     }
   ),
   private = list(
     .items = NULL
+  )
+)
+
+#' @title PropertiesMap class
+#' @description PropertiesMap for use in workflow expressions.
+#' @export
+PropertiesMap = R6Class("PropertiesMap",
+  inherit = Properties,
+  public = list(
+
+    #' @field path
+    #' The parent path of the PropertiesMap instance.
+    path = NULL,
+
+    #' @field shape_name
+    #' The botocore sagemaker service model shape name.
+    shape_name = NULL,
+
+    #' @field service_name
+    #' The botocore service name.
+    service_name = NULL,
+
+    #' @description Create a PropertiesMap instance representing the given shape.
+    #' @param path (str): The parent path of the PropertiesMap instance.
+    #' @param shape_name (str): The botocore sagemaker service model shape name.
+    #' @param service_name (str): The botocore service name.
+    initialize = function(path,
+                          shape_name=NULL,
+                          service_name="sagemaker"){
+      super$initialize(path, shape_name)
+      self$shape_name = shape_name
+      self$service_name = service_name
+      private$.items = list()
+    },
+
+    #' @description Populate the indexing item with a Property, for both lists and dictionaries.
+    #' @param item (Union[int, str]): The index of the item in sequence.
+    get_item = function(item){
+      if (!(item %in% names(private$.items))){
+        shape = properties_env[[self$sevice_name]][[self$shape_name]]
+        member = shape[["value"]][["shape"]]
+        if (is.character(item)){
+          property_item = Properties$new(
+            sprintf("%s['%s']", private$.path, item), member
+          )
+        } else {
+          property_item = Properties$new(
+            sprintf("%s['%s']", private$.path, item), member
+          )
+        }
+        self._items[item] = property_item
+      }
+      return(private$.items[[item]])
+    }
   )
 )
 

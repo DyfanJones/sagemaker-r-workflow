@@ -2,8 +2,8 @@
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/wrangler/ingestion.py
 
 #' @import R6
+#' @import sagemaker.core
 #' @import sagemaker.common
-#' @import uuid
 
 #' @title DataWranglerProcessor class
 #' @description Handles Amazon SageMaker DataWrangler tasks
@@ -78,7 +78,7 @@ DataWranglerProcessor = R6Class(
       )
 
       self$data_wrangler_flow_source = data_wrangler_flow_source
-      self$sagemaker_session = sagemaker_session %||% sagemaker.common::Session$new()
+      self$sagemaker_session = sagemaker_session %||% sagemaker.core::Session$new()
       image_uri = sagemaker.common::ImageUris$new()$retrieve(
         "data-wrangler", region=self$sagemaker_session$paws_region_name
       )
@@ -131,8 +131,9 @@ DataWranglerProcessor = R6Class(
       return (super$.normalize_args(job_name, arguments, inputs, outputs, code, kms_key))
     },
 
+    # Creates a ProcessingInput with Data Wrangler recipe uri and appends it to inputs
     .get_recipe_input = function(){
-      return(ProcessingInput$new(
+      return(sagemaker.common::ProcessingInput$new(
         source=self$data_wrangler_flow_source,
         destination="/opt/ml/processing/flow",
         input_name="flow",

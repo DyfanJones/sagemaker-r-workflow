@@ -7,7 +7,7 @@
 CreateModel step for workflow.
 }
 \section{Super classes}{
-\code{\link[sagemaker.workflow:Entity]{sagemaker.workflow::Entity}} -> \code{\link[sagemaker.workflow:Step]{sagemaker.workflow::Step}} -> \code{CreateModelStep}
+\code{\link[sagemaker.workflow:Entity]{sagemaker.workflow::Entity}} -> \code{\link[sagemaker.workflow:Step]{sagemaker.workflow::Step}} -> \code{\link[sagemaker.workflow:ConfigurableRetryStep]{sagemaker.workflow::ConfigurableRetryStep}} -> \code{CreateModelStep}
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -32,7 +32,8 @@ ModelName cannot be included in the arguments.}
 \itemize{
 \item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Step" data-id="add_depends_on">}\href{../../sagemaker.workflow/html/Step.html#method-add_depends_on}{\code{sagemaker.workflow::Step$add_depends_on()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Step" data-id="format">}\href{../../sagemaker.workflow/html/Step.html#method-format}{\code{sagemaker.workflow::Step$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="Step" data-id="to_request">}\href{../../sagemaker.workflow/html/Step.html#method-to_request}{\code{sagemaker.workflow::Step$to_request()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="ConfigurableRetryStep" data-id="add_retry_policy">}\href{../../sagemaker.workflow/html/ConfigurableRetryStep.html#method-add_retry_policy}{\code{sagemaker.workflow::ConfigurableRetryStep$add_retry_policy()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="ConfigurableRetryStep" data-id="to_request">}\href{../../sagemaker.workflow/html/ConfigurableRetryStep.html#method-to_request}{\code{sagemaker.workflow::ConfigurableRetryStep$to_request()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -44,7 +45,15 @@ Construct a CreateModelStep, given an `sagemaker.model.Model` instance.
              In addition to the Model instance, the other arguments are those that are supplied to
              the `_create_sagemaker_model` method of the `sagemaker.model.Model._create_sagemaker_model`.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CreateModelStep$new(name, model, inputs, depends_on = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{CreateModelStep$new(
+  name,
+  model,
+  inputs,
+  depends_on = NULL,
+  retry_policies = NULL,
+  display_name = NULL,
+  description = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -59,6 +68,12 @@ Defaults to `None`.}
 
 \item{\code{depends_on}}{(List[str]): A list of step names this `sagemaker.workflow.steps.CreateModelStep`
 depends on}
+
+\item{\code{retry_policies}}{(List[RetryPolicy]):  A list of retry policy}
+
+\item{\code{display_name}}{(str): The display name of the CreateModel step.}
+
+\item{\code{description}}{(str): The description of the CreateModel step.}
 }
 \if{html}{\out{</div>}}
 }

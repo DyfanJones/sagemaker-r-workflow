@@ -7,7 +7,7 @@
 #' @include r_utils.R
 
 #' @import R6
-#' @import sagemaker.common
+#' @import sagemaker.core
 
 #' @title Workflow CallbackOuputTypeEnum class
 #' @description CallbackOutput type enum.
