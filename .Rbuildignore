@@ -7,3 +7,4 @@
 ^vendor$
 ^Makefile$
 ^data-raw$
+^\.github$
