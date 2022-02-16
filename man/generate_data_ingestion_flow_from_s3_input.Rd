@@ -22,12 +22,12 @@ generate_data_ingestion_flow_from_s3_input(
 
 \item{s3_has_header}{(bool): flag indicating the input has header or not}
 
-\item{operator_version:}{(str): the version of the operator}
+\item{operator_version}{(str): the version of the operator}
 
-\item{schema:}{(typing.Dict): the schema for the data to be ingested}
+\item{schema}{(list): the schema for the data to be ingested}
 }
 \value{
-dict (typing.Dict): A flow only conduct data ingestion with 1-1 mapping
+list: A flow only conduct data ingestion with 1-1 mapping
              output_name (str): The output name used to configure
              `sagemaker.processing.FeatureStoreOutput`
 }

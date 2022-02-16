@@ -20,7 +20,7 @@ Callback step for workflow.
 
 \item{\code{outputs}}{Outputs that can be provided when completing a callback.}
 
-\item{\code{cache_config}}{A list of step names this `sagemaker.workflow.steps.TransformStep`}
+\item{\code{cache_config}}{A list of step names this `TransformStep`}
 }
 \if{html}{\out{</div>}}
 }
@@ -77,9 +77,9 @@ in the SQS message body of callback messages.}
 
 \item{\code{outputs}}{(List[CallbackOutput]): Outputs that can be provided when completing a callback.}
 
-\item{\code{cache_config}}{(CacheConfig):  A `sagemaker.workflow.steps.CacheConfig` instance.}
+\item{\code{cache_config}}{(CacheConfig):  A `CacheConfig` instance.}
 
-\item{\code{depends_on}}{(List[str]): A list of step names this `sagemaker.workflow.steps.TransformStep`
+\item{\code{depends_on}}{(List[str]): A list of step names this `TransformStep`
 depends on}
 }
 \if{html}{\out{</div>}}

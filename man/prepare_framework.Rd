@@ -11,7 +11,7 @@ prepare_framework(estimator, s3_operations)
 get information from and update.}
 
 \item{s3_operations}{(list): The dict to specify s3 operations (upload
-`source_dir` ).}
+`source_dir`).}
 }
 \description{
 S3 operations specify where to upload `source_dir`.

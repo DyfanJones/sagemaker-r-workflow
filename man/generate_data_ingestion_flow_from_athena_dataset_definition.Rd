@@ -16,9 +16,9 @@ generate_data_ingestion_flow_from_athena_dataset_definition(
 
 \item{athena_dataset_definition}{(AthenaDatasetDefinition): athena input to flow source node}
 
-\item{operator_version:}{(str): the version of the operator}
+\item{operator_version}{(str): the version of the operator}
 
-\item{schema:}{(typing.Dict): the schema for the data to be ingested}
+\item{schema}{(list): the schema for the data to be ingested}
 }
 \value{
 dict (typing.Dict): A flow only conduct data ingestion with 1-1 mapping

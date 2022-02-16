@@ -94,7 +94,7 @@ CallbackStep = R6Class("CallbackStep",
     outputs = NULL,
 
     #' @field cache_config
-    #' A list of step names this `sagemaker.workflow.steps.TransformStep`
+    #' A list of step names this `TransformStep`
     cache_config = NULL,
 
     #' @description Constructs a CallbackStep.
@@ -103,8 +103,8 @@ CallbackStep = R6Class("CallbackStep",
     #' @param inputs (dict): Input arguments that will be provided
     #'              in the SQS message body of callback messages.
     #' @param outputs (List[CallbackOutput]): Outputs that can be provided when completing a callback.
-    #' @param cache_config (CacheConfig):  A `sagemaker.workflow.steps.CacheConfig` instance.
-    #' @param depends_on (List[str]): A list of step names this `sagemaker.workflow.steps.TransformStep`
+    #' @param cache_config (CacheConfig):  A `CacheConfig` instance.
+    #' @param depends_on (List[str]): A list of step names this `TransformStep`
     #'              depends on
     initialize = function(name,
                           sqs_queue_url,

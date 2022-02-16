@@ -11,8 +11,11 @@ interpolate(
 )
 }
 \arguments{
-\item{request_obj}{(RequestType): The request dict.
-callback_output_to_step_map (Dict[str, str]): A dict of output name -> step name.}
+\item{request_obj}{(RequestType): The request dict.}
+
+\item{callback_output_to_step_map}{(list[str, str]): A dict of output name -> step name.}
+
+\item{lambda_output_to_step_map}{(list[str, str]): Placeholder}
 }
 \value{
 RequestType: The request dict with Parameter values replaced by their expression.

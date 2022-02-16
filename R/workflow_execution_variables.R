@@ -40,33 +40,10 @@ ExecutionVariable = R6Class("ExecutionVariable",
 #' @title Enum-like class for all ExecutionVariable instances.
 #' @description Considerations to move these as module-level constants should be made.
 #' @export
-ExecutionVariables = R6Class("ExecutionVariables",
-  public = list(
-
-
-    #' @field START_DATETIME
-    #'
-    START_DATETIME = ExecutionVariable$new("StartDateTime"),
-
-    #' @field CURRENT_DATETIME
-    #'
-    CURRENT_DATETIME = ExecutionVariable$new("CurrentDateTime"),
-
-    #' @field PIPELINE_NAME
-    #'
-    PIPELINE_NAME = ExecutionVariable$new("PipelineName"),
-
-    #' @field PIPELINE_ARN
-    #'
-    PIPELINE_ARN = ExecutionVariable$new("PipelineArn"),
-
-    #' @field PIPELINE_EXECUTION_ARN
-    #'
-    PIPELINE_EXECUTION_ARN = ExecutionVariable$new("PipelineExecutionArn"),
-
-    #' @description format class
-    format = function(){
-      format_class(self)
-    }
-  )
+ExecutionVariables = Enum(
+  START_DATETIME = ExecutionVariable$new("StartDateTime"),
+  CURRENT_DATETIME = ExecutionVariable$new("CurrentDateTime"),
+  PIPELINE_NAME = ExecutionVariable$new("PipelineName"),
+  PIPELINE_ARN = ExecutionVariable$new("PipelineArn"),
+  PIPELINE_EXECUTION_ARN = ExecutionVariable$new("PipelineExecutionArn")
 )

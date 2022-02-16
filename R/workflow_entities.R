@@ -6,7 +6,7 @@
 
 #' @title Base object for workflow entities.
 #' @description Entities must implement the to_request method.
-#' @noRd
+#' @keywords internal
 Entity = R6Class("Entity",
   public = list(
 
@@ -36,7 +36,7 @@ DefaultEnumMeta = R6Class("DefaultEnumMeta",
 
 #' @title Base object for expressions.
 #' @description Expressions must implement the expr property.
-#' @noRd
+#' @keywords internal
 Expression = R6Class("Expression",
   public = list(
 

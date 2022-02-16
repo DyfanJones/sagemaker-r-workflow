@@ -13,11 +13,11 @@ Experiment config for SageMaker pipeline.
 ## ------------------------------------------------
 
 # Use pipeline name as the experiment name and pipeline execution id as the trial name::
-PipelineExperimentConfig$new(
-     ExecutionVariables$new()$PIPELINE_NAME, ExecutionVariables$new()$PIPELINE_EXECUTION_ID)
+PipeLineExperimentConfig$new(
+     ExecutionVariables$PIPELINE_NAME, ExecutionVariables$PIPELINE_EXECUTION_ID)
 # Use a customized experiment name and pipeline execution id as the trial name::
-PipelineExperimentConfig$new(
-     'MyExperiment', ExecutionVariables$new()$PIPELINE_EXECUTION_ID)
+PipeLineExperimentConfig$new(
+     'MyExperiment', ExecutionVariables$PIPELINE_EXECUTION_ID)
 }
 \section{Super class}{
 \code{\link[sagemaker.workflow:Entity]{sagemaker.workflow::Entity}} -> \code{PipeLineExperimentConfig}
@@ -60,11 +60,11 @@ the name of the trial that will be created.}
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{# Use pipeline name as the experiment name and pipeline execution id as the trial name::
-PipelineExperimentConfig$new(
-     ExecutionVariables$new()$PIPELINE_NAME, ExecutionVariables$new()$PIPELINE_EXECUTION_ID)
+PipeLineExperimentConfig$new(
+     ExecutionVariables$PIPELINE_NAME, ExecutionVariables$PIPELINE_EXECUTION_ID)
 # Use a customized experiment name and pipeline execution id as the trial name::
-PipelineExperimentConfig$new(
-     'MyExperiment', ExecutionVariables$new()$PIPELINE_EXECUTION_ID)
+PipeLineExperimentConfig$new(
+     'MyExperiment', ExecutionVariables$PIPELINE_EXECUTION_ID)
 }
 \if{html}{\out{</div>}}
 

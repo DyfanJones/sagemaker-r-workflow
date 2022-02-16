@@ -56,7 +56,7 @@ Pipeline = R6Class("Pipeline",
           pipeline_experiment_config
         else
           PipelineExperimentConfig$new(
-            ExecutionVariables$new()$PIPELINE_NAME, ExecutionVariables$new()$PIPELINE_EXECUTION_ID
+            ExecutionVariables$PIPELINE_NAME, ExecutionVariables$PIPELINE_EXECUTION_ID
           )
       )
       self$steps = steps
@@ -290,7 +290,8 @@ format_start_parameters = function(parameters){
 
 #' @title Replaces Parameter values in a list of nested Dict[str, Any] with their workflow expression.
 #' @param request_obj (RequestType): The request dict.
-#'              callback_output_to_step_map (Dict[str, str]): A dict of output name -> step name.
+#' @param callback_output_to_step_map (list[str, str]): A dict of output name -> step name.
+#' @param lambda_output_to_step_map (list[str, str]): Placeholder
 #' @return RequestType: The request dict with Parameter values replaced by their expression.
 #' @export
 interpolate = function(request_obj,
@@ -321,12 +322,7 @@ interpolate = function(request_obj,
     step_name = lambda_output_to_step_map[[obj$output_name]]
     return(obj$expr(step_name))
   }
-  if (is_list_named(obj)){
-    new = obj
-    for (key in names(obj)){
-      new[[key]] = interpolate(value, callback_output_to_step_map, lambda_output_to_step_map)
-    }
-  } else if (is.list(obj)){
+  if (is.list(obj)){
     new = lapply(obj,
       function(value) interpolate(value, callback_output_to_step_map, lambda_output_to_step_map)
     )

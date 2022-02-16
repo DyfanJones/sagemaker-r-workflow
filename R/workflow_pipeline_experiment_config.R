@@ -23,11 +23,11 @@ PipeLineExperimentConfig = R6Class("PipeLineExperimentConfig",
     #'              the name of the trial that will be created.
     #' @examples
     #' # Use pipeline name as the experiment name and pipeline execution id as the trial name::
-    #' PipelineExperimentConfig$new(
-    #'      ExecutionVariables$new()$PIPELINE_NAME, ExecutionVariables$new()$PIPELINE_EXECUTION_ID)
+    #' PipeLineExperimentConfig$new(
+    #'      ExecutionVariables$PIPELINE_NAME, ExecutionVariables$PIPELINE_EXECUTION_ID)
     #' # Use a customized experiment name and pipeline execution id as the trial name::
-    #' PipelineExperimentConfig$new(
-    #'      'MyExperiment', ExecutionVariables$new()$PIPELINE_EXECUTION_ID)
+    #' PipeLineExperimentConfig$new(
+    #'      'MyExperiment', ExecutionVariables$PIPELINE_EXECUTION_ID)
     initialize = function(experiment_name,
                           trial_name){
       self$experiment_name = experiment_name

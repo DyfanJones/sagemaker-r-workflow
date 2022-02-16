@@ -11,9 +11,9 @@
 #' @param s3_uri (str): uri for the s3 input to flow source node
 #' @param s3_content_type (str): s3 input content type
 #' @param s3_has_header (bool): flag indicating the input has header or not
-#' @param operator_version: (str): the version of the operator
-#' @param schema: (typing.Dict): the schema for the data to be ingested
-#' @return dict (typing.Dict): A flow only conduct data ingestion with 1-1 mapping
+#' @param operator_version (str): the version of the operator
+#' @param schema (list): the schema for the data to be ingested
+#' @return list: A flow only conduct data ingestion with 1-1 mapping
 #'              output_name (str): The output name used to configure
 #'              `sagemaker.processing.FeatureStoreOutput`
 #' @export
@@ -60,8 +60,8 @@ generate_data_ingestion_flow_from_s3_input = function(input_name,
 #' @description Generate the data ingestion only flow from athena input
 #' @param input_name (str): the name of the input to flow source node
 #' @param athena_dataset_definition (AthenaDatasetDefinition): athena input to flow source node
-#' @param operator_version: (str): the version of the operator
-#' @param schema: (typing.Dict): the schema for the data to be ingested
+#' @param operator_version (str): the version of the operator
+#' @param schema (list): the schema for the data to be ingested
 #' @return dict (typing.Dict): A flow only conduct data ingestion with 1-1 mapping
 #'              output_name (str): The output name used to configure
 #'              `sagemaker.processing.FeatureStoreOutput`
@@ -104,9 +104,9 @@ generate_data_ingestion_flow_from_athena_dataset_definition = function(input_nam
 #' @description Generate the data ingestion only flow from redshift input
 #' @param input_name (str): the name of the input to flow source node
 #' @param redshift_dataset_definition (RedshiftDatasetDefinition): redshift input to flow source node
-#' @param operator_version: (str): the version of the operator
-#' @param schema: (typing.Dict): the schema for the data to be ingested
-#' @return dict (typing.Dict): A flow only conduct data ingestion with 1-1 mapping
+#' @param operator_version (str): the version of the operator
+#' @param schema (list): the schema for the data to be ingested
+#' @return list: A flow only conduct data ingestion with 1-1 mapping
 #'              output_name (str): The output name used to configure
 #'              `sagemaker.processing.FeatureStoreOutput`
 #' @export
@@ -115,7 +115,7 @@ generate_data_ingestion_flow_from_redshift_dataset_definition = function(input_n
                                                                          operator_version="0.1",
                                                                          schema=NULL){
   stopifnot(is.character(input_name),
-            inherits(athena_dataset_definition, "RedshiftDatasetDefinition"),
+            inherits(redshift_dataset_definition, "RedshiftDatasetDefinition"),
             is.character(operator_version),
             is.list(schema) || is.null(schema))
   source_node = list(

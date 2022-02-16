@@ -7,13 +7,14 @@
 #' @import sagemaker.core
 #' @import sagemaker.common
 #' @import sagemaker.mlcore
+#' @importFrom utils modifyList
 
 #' @title Prepare S3 operations and environment variables related to framework.
 #' @description S3 operations specify where to upload `source_dir`.
 #' @param estimator (sagemaker.estimator.Estimator): The framework estimator to
 #'              get information from and update.
 #' @param s3_operations (list): The dict to specify s3 operations (upload
-#'              `source_dir` ).
+#'              `source_dir`).
 #' @export
 prepare_framework = function(estimator,
                              s3_operations){
@@ -22,7 +23,7 @@ prepare_framework = function(estimator,
     s3_split = parse_s3_url(estimator$code_location)
     s3_split$key = fs::path(s3_split$keykey, estimator$.current_job_name, "source", "sourcedir.tar.gz")
   } else if (!is.null(estimator$uploaded_code)){
-    s3_split = parse_s3_url(estimator.uploaded_code.s3_prefix)
+    s3_split = parse_s3_url(estimator$uploaded_code$s3_prefix)
   } else {
     s3_split$bucket = estimator$sagemaker_session$.__enclos_env__$private$.default_bucket
     s3_split$key = file.path(estimator$.current_job_name, "source", "sourcedir.tar.gz")
@@ -532,7 +533,7 @@ prepare_framework_container_def = function(model,
 
   tryCatch({
     if (!islistempty(model$model_server_workers))
-      deploy_env[[toupper(MODEL_SERVER_WORKERS_PARAM_NAME)]] = as.character(
+      deploy_env[[toupper(model_parameters$MODEL_SERVER_WORKERS_PARAM_NAME)]] = as.character(
         model$model_server_workers)
   }, error = function(e) {
     # This applies to a FrameworkModel which is not SageMaker Deep Learning Framework Model
@@ -566,7 +567,7 @@ model_config = function(model,
     base_name = sagemaker.core::base_name_from_image(container_def[["Image"]])
     model$name = model$name %||% sagemaker.core::name_from_base(base_name)
   }
-  primary_container = session$.__enclos_env__$private$.expand_container_def(container_def)
+  primary_container = sagemaker.core::Session$private_methods$.expand_container_def(container_def)
 
   config = list(
     "ModelName"=model$name,
