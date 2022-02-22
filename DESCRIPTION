@@ -22,7 +22,7 @@ Imports:
     uuid
 Suggests:
     crayon,
-    testthat
+    testthat (>= 3.0.0)
 Remotes:
     DyfanJones/sagemaker-r-core,
     DyfanJones/sagemaker-r-common,
@@ -60,3 +60,4 @@ Collate:
     'zzz.R'
 Depends: 
     R (>= 2.10)
+Config/testthat/edition: 3
