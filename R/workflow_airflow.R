@@ -394,16 +394,16 @@ tuning_config = function(tuner,
   for (estimator_name in sort(names(train_config_dict))){
     train_config = train_config_dict[[estimator_name]]
     train_config[["HyperParameters"]]=NULL
-    train_config[["StaticHyperParameters"]] = tuner$static_hyperparameters_dict[[estimator_name]]
+    train_config[["StaticHyperParameters"]] = tuner$static_hyperparameters_list[[estimator_name]]
 
     train_config[["AlgorithmSpecification"]][[
       "MetricDefinitions"
-    ]] = tuner$metric_definitions_dict[[estimator_name]]
+    ]] = tuner$metric_definitions_list[[estimator_name]]
 
     train_config[["DefinitionName"]] = estimator_name
     train_config[["TuningObjective"]] = list(
       "Type"=tuner$objective_type,
-      "MetricName"=tuner$objective_metric_name_dict[[estimator_name]]
+      "MetricName"=tuner$objective_metric_name_list[[estimator_name]]
     )
     train_config[["HyperParameterRanges"]] = tuner$hyperparameter_ranges_list()[[estimator_name]]
 
@@ -421,10 +421,15 @@ tuning_config = function(tuner,
   for (s3_operations in s3_operations_list){
     for (key in names(s3_operations)){
       operations = s3_operations[[key]]
-      if (!(key %in% names(s3_operations_merged)))
+      if (is.null(names(s3_operations_merged)) || !(key %in% names(s3_operations_merged)))
         s3_operations_merged[[key]] = list()
+
+      # sort named list
+      s3_ops_name = sort(names(s3_operations_merged[[key]]))
+      s3_ops_check = s3_operations_merged[[key]][s3_ops_name]
+
       for (operation in operations){
-        if (!(operation %in% names(s3_operations_merged[[key]])))
+        if (is.null(s3_ops_check) || !identical(operation[sort(names(operation))], s3_ops_check))
           s3_operations_merged[[key]] = list.append(s3_operations_merged[[key]], operation)
       }
     }
