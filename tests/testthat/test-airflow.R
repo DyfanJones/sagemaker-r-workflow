@@ -647,9 +647,9 @@ test_that("test_multi_estimator_tuning_config", {
     tags=list(list("{{ key }}"="{{ value }}")),
     base_tuning_job_name="{{ base_job_name }}"
   )
-  data = list(
-    mxnet_estimator_name="{{ training_data_mxnet }}",
-    ll_estimator_name=RecordSet$new("{{ record }}", 10000, 100, "S3Prefix")
+  data = setNames(
+    list("{{ training_data_mxnet }}", RecordSet$new("{{ record }}", 10000, 100, "S3Prefix")),
+    c(mxnet_estimator_name, ll_estimator_name)
   )
   with_mock(
     `sagemaker.core::sagemaker_timestamp` = mock_fun(TIME_STAMP),
@@ -660,7 +660,143 @@ test_that("test_multi_estimator_tuning_config", {
       list(bucket = "output", key = sprintf("{{{{ base_job_name }}}}-%s/source/sourcedir.tar.gz", TIME_STAMP))), {
         config = tuning_config(multi_estimator_tuner, inputs=data, include_cls_metadata=list())
   })
-############### here
+  expected_config = list(
+    "HyperParameterTuningJobName"=sprintf("{{ base_job_name }}-%s", TIME_STAMP),
+    "HyperParameterTuningJobConfig"=list(
+      "Strategy"="Bayesian",
+      "ResourceLimits"=list(
+        "MaxNumberOfTrainingJobs"="{{ max_job }}",
+        "MaxParallelTrainingJobs"="{{ max_parallel_job }}"
+      ),
+      "TrainingJobEarlyStoppingType"="Off"
+    ),
+    "TrainingJobDefinitions"=list(
+      list(
+        "AlgorithmSpecification"=list(
+          "TrainingImage"="174872318107.dkr.ecr.us-west-2.amazonaws.com/linear-learner:1",
+          "TrainingInputMode"="File"
+        ),
+        "OutputDataConfig"=list("S3OutputPath"="s3://output/"),
+        "StoppingCondition"=list("MaxRuntimeInSeconds"=86400),
+        "ResourceConfig"=list(
+          "InstanceCount"=1,
+          "InstanceType"="ml.c4.2xlarge",
+          "VolumeSizeInGB"=30
+        ),
+        "RoleArn"="{{ role }}",
+        "InputDataConfig"=list(
+          list(
+            "DataSource"=list(
+              "S3DataSource"=list(
+                "S3DataType"="S3Prefix",
+                "S3Uri"="{{ record }}",
+                "S3DataDistributionType"="ShardedByS3Key"
+              )
+            ),
+            "ChannelName"="train"
+          )
+        ),
+        "StaticHyperParameters"=list(
+          "predictor_type"="binary_classifier",
+          "feature_dim"="100"
+        ),
+        "DefinitionName"="linear_learner",
+        "TuningObjective"=list(
+          "Type"="Maximize",
+          "MetricName"="validation:binary_classification_accuracy" # Missing
+        ),
+        "HyperParameterRanges"=list(
+          "ContinuousParameterRanges"=list(
+            list(
+              "Name"="learning_rate",
+              "MinValue"="0.2",
+              "MaxValue"="0.5",
+              "ScalingType"="Auto"
+            )
+          ),
+          "CategoricalParameterRanges"=list(
+            list("Name"="use_bias", "Values"=list("TRUE", "FALSE"))
+          ),
+          "IntegerParameterRanges"=list()
+        )
+      ),
+      list(
+        "AlgorithmSpecification"=list(
+          "TrainingImage"="520713654638.dkr.ecr.us-west-2.amazonaws.com/sagemaker-mxnet:1.3.0-cpu-py3",
+          "TrainingInputMode"="File",
+          "MetricDefinitions"=list(
+            list("Name"="Validation-accuracy", "Regex"="Validation-accuracy=([0-9\\.]+)")
+          )
+        ),
+        "OutputDataConfig"=list("S3OutputPath"="s3://output/"),
+        "StoppingCondition"=list("MaxRuntimeInSeconds"=86400),
+        "ResourceConfig"=list(
+          "InstanceCount"=1,
+          "InstanceType"="ml.m4.xlarge",
+          "VolumeSizeInGB"=30
+        ),
+        "RoleArn"="{{ role }}",
+        "InputDataConfig"=list(
+          list(
+            "DataSource"=list(
+              "S3DataSource"=list(
+                "S3DataType"="S3Prefix",
+                "S3Uri"="{{ training_data_mxnet }}",
+                "S3DataDistributionType"="FullyReplicated"
+              )
+            ),
+            "ChannelName"="training"
+          )
+        ),
+        "StaticHyperParameters"=list(
+          "batch_size"="100",
+          "sagemaker_container_log_level"="20",
+          "sagemaker_job_name"=sprintf('{{ base_job_name }}-%s', TIME_STAMP),
+          "sagemaker_region"='us-west-2',
+          "sagemaker_submit_directory"=sprintf(
+            's3://output/{{ base_job_name }}-%s/source/sourcedir.tar.gz', TIME_STAMP),
+          "sagemaker_program"='{{ entry_point }}',
+          "sagemaker_estimator_class_name"='MXNet',
+          "sagemaker_estimator_module"='sagemaker.mxnet.estimator'
+        ),
+        "DefinitionName"="mxnet",
+        "TuningObjective"=list("Type"="Maximize", "MetricName"="Validation-accuracy"),
+        "HyperParameterRanges"=list(
+          "ContinuousParameterRanges"=list(
+            list(
+              "Name"="learning_rate",
+              "MinValue"="0.01",
+              "MaxValue"="0.2",
+              "ScalingType"="Auto"
+            )
+          ),
+          "CategoricalParameterRanges"=list(
+            list("Name"="optimizer", "Values"=list('"sgd"', '"Adam"'))
+          ),
+          "IntegerParameterRanges"=list(
+            list(
+              "Name"="num_epoch",
+              "MinValue"="10",
+              "MaxValue"="50",
+              "ScalingType"="Auto"
+            )
+          )
+        )
+      )
+    ),
+    "S3Operations"=list(
+      "S3Upload"=list(
+        list(
+          "Path"="{{ source_dir }}",
+          "Bucket"="output",
+          "Key"=sprintf("{{ base_job_name }}-%s/source/sourcedir.tar.gz", TIME_STAMP),
+          "Tar"=TRUE
+        )
+      )
+    ),
+    "Tags"=list(list("{{ key }}"="{{ value }}"))
+  )
+  expect_equal(config[sort(names(config))], expected_config[sort(names(expected_config))])
 })
 
 
