@@ -799,6 +799,66 @@ test_that("test_multi_estimator_tuning_config", {
   expect_equal(config[sort(names(config))], expected_config[sort(names(expected_config))])
 })
 
+test_that("test_merge_s3_operations", {
+  s3_operations_list = list(
+    list(
+      "S3Upload"=list(
+        list(
+          "Bucket"="output",
+          "Key"="base_job_name-111/source/sourcedir.tar.gz",
+          "Path"="source_dir",
+          "Tar"=TRUE
+        )
+      )
+    ),
+    list(
+      "S3Upload"=list(
+        list(
+          "Bucket"="output",
+          "Key"="base_job_name-111/source/sourcedir.tar.gz",
+          "Path"="source_dir",
+          "Tar"=TRUE
+        )
+      ),
+      "S3CreateBucket"=list(list("Bucket"="output"))
+    ),
+    list(
+      "S3Upload"=list(
+        list(
+          "Bucket"="output_2",
+          "Key"="base_job_name-111/source/sourcedir_2.tar.gz",
+          "Path"="source_dir_2",
+          "Tar"=TRUE
+        )
+      )
+    ),
+    list("S3CreateBucket"=list(list("Bucket"="output_2"))),
+    list()
+  )
 
+  expected_result = list(
+    "S3Upload"=list(
+      list(
+        "Bucket"="output",
+        "Key"="base_job_name-111/source/sourcedir.tar.gz",
+        "Path"="source_dir",
+        "Tar"=TRUE
+      ),
+      list(
+        "Bucket"="output_2",
+        "Key"="base_job_name-111/source/sourcedir_2.tar.gz",
+        "Path"="source_dir_2",
+        "Tar"=TRUE
+      )
+    ),
+    "S3CreateBucket"=list(list("Bucket"="output"), list("Bucket"="output_2"))
+  )
+
+  sagemaker.workflow:::.merge_s3_operations(s3_operations_list)
+  expect_equal(
+    sagemaker.workflow:::.merge_s3_operations(s3_operations_list),
+    expected_result
+  )
+})
 
 

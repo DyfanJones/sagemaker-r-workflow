@@ -424,12 +424,8 @@ tuning_config = function(tuner,
       if (is.null(names(s3_operations_merged)) || !(key %in% names(s3_operations_merged)))
         s3_operations_merged[[key]] = list()
 
-      # sort named list
-      s3_ops_name = sort(names(s3_operations_merged[[key]]))
-      s3_ops_check = s3_operations_merged[[key]][s3_ops_name]
-
       for (operation in operations){
-        if (is.null(s3_ops_check) || !identical(operation[sort(names(operation))], s3_ops_check))
+        if (!list.exist.in(operation, s3_operations_merged[[key]]))
           s3_operations_merged[[key]] = list.append(s3_operations_merged[[key]], operation)
       }
     }
