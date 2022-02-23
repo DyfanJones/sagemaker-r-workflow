@@ -13,6 +13,7 @@ Imports:
     methods,
     digest,
     processx,
+    data.table,
     R6,
     sagemaker.core,
     sagemaker.common,
