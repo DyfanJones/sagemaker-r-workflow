@@ -861,4 +861,66 @@ test_that("test_merge_s3_operations", {
   )
 })
 
+test_that("test_byo_model_config", {
+  sms = sagemaker_session()
+  byo_model = Model$new(
+    model_data="{{ model_data }}",
+    image_uri="{{ image_uri }}",
+    role="{{ role }}",
+    env=list("{{ key }}"="{{ value }}"),
+    name="model",
+    sagemaker_session=sms
+  )
+  config = model_config(model=byo_model)
+  expected_config = list(
+    "ModelName"="model",
+    "PrimaryContainer"=list(
+      "Image"="{{ image_uri }}",
+      "Environment"=list("{{ key }}"="{{ value }}"),
+      "ModelDataUrl"="{{ model_data }}"
+    ),
+    "ExecutionRoleArn"="{{ role }}"
+  )
+  expect_equal(config, expected_config)
+})
 
+test_that("test_byo_framework_model_config", {
+  sms = sagemaker_session()
+  byo_model = FrameworkModel$new(
+    model_data="{{ model_data }}",
+    image_uri="{{ image_uri }}",
+    role="{{ role }}",
+    entry_point="{{ entry_point }}",
+    source_dir="{{ source_dir }}",
+    env=list("{{ key }}"="{{ value }}"),
+    name="model",
+    sagemaker_session=sms
+  )
+  config = model_config(model=byo_model, instance_type="ml.c4.xlarge")
+  expected_config = list(
+    "ModelName"="model",
+    "PrimaryContainer"=list(
+      "Image"="{{ image_uri }}",
+      "Environment"=list(
+        "{{ key }}"="{{ value }}",
+        "SAGEMAKER_PROGRAM"="{{ entry_point }}",
+        "SAGEMAKER_SUBMIT_DIRECTORY"="s3://output/model/source/sourcedir.tar.gz",
+        "SAGEMAKER_CONTAINER_LOG_LEVEL"="20",
+        "SAGEMAKER_REGION"="us-west-2"
+      ),
+      "ModelDataUrl"="{{ model_data }}"
+    ),
+    "ExecutionRoleArn"="{{ role }}",
+    "S3Operations"=list(
+      "S3Upload"=list(
+        list(
+          "Path"="{{ source_dir }}",
+          "Bucket"="output",
+          "Key"="model/source/sourcedir.tar.gz",
+          "Tar"=TRUE
+        )
+      )
+    )
+  )
+  expect_equal(config, expected_config)
+})

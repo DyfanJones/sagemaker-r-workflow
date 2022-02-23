@@ -510,7 +510,7 @@ prepare_framework_container_def = function(model,
   base_name = sagemaker.core::base_name_from_image(deploy_image)
   model$name = model$name %||% sagemaker.core::name_from_base(base_name)
 
-  bucket = model$bucket %||% model$sagemaker_session$.default_bucket
+  bucket = model$bucket %||% model$sagemaker_session$.__enclos_env__$private$.default_bucket
   if (!is.null(model$entry_point)){
     script = basename(model$entry_point)
     key = sprintf("%s/source/sourcedir.tar.gz", model$name)
@@ -525,12 +525,14 @@ prepare_framework_container_def = function(model,
       UploadedCode$s3_prefix=code_dir
       UploadedCode$script_name= script
       model$uploaded_code = UploadedCode
+      ll = deparse(substitute(s3_operations))
       s3_operations[["S3Upload"]] = list(
         list("Path"=(model$source_dir %||% script), "Bucket"=bucket, "Key"=key, "Tar"=TRUE)
       )
+      assign(ll, s3_operations, envir = parent.frame())
     }
   }
-  deploy_env = list(model$env)
+  deploy_env = as.list(model$env)
   deploy_env = modifyList(deploy_env, model$.__enclos_env__$private$.framework_env_vars())
 
   tryCatch({
