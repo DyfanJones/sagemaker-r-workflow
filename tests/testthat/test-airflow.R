@@ -1,4 +1,4 @@
-# NOTE=This code has been modified from AWS Sagemaker Python:
+# NOTE: This code has been modified from AWS Sagemaker Python:
 # https://github.com/aws/sagemaker-python-sdk/blob/dev/tests/unit/test_airflow.py
 
 library(sagemaker.core)
@@ -923,4 +923,742 @@ test_that("test_byo_framework_model_config", {
     )
   )
   expect_equal(config, expected_config)
+})
+
+test_that("test_framework_model_config",{
+  sms = sagemaker_session()
+  chainer_model = ChainerModel$new(
+    model_data="{{ model_data }}",
+    role="{{ role }}",
+    entry_point="{{ entry_point }}",
+    source_dir="{{ source_dir }}",
+    image_uri=NULL,
+    py_version="py3",
+    framework_version="5.0.0",
+    model_server_workers="{{ model_server_worker }}",
+    sagemaker_session=sms
+  )
+  with_mock(
+    `sagemaker.core::sagemaker_timestamp` = mock_fun(TIME_STAMP), {
+      config = model_config(model=chainer_model, instance_type="ml.c4.xlarge")
+  })
+  expected_config = list(
+    "ModelName"=sprintf("sagemaker-chainer-%s", TIME_STAMP),
+    "PrimaryContainer"=list(
+      "Image"="520713654638.dkr.ecr.us-west-2.amazonaws.com/sagemaker-chainer:5.0.0-cpu-py3",
+      "Environment"=list(
+        "SAGEMAKER_PROGRAM"="{{ entry_point }}",
+        "SAGEMAKER_SUBMIT_DIRECTORY"=sprintf(
+          "s3://output/sagemaker-chainer-%s/source/sourcedir.tar.gz", TIME_STAMP),
+        "SAGEMAKER_CONTAINER_LOG_LEVEL"="20",
+        "SAGEMAKER_REGION"="us-west-2",
+        "SAGEMAKER_MODEL_SERVER_WORKERS"="{{ model_server_worker }}"
+      ),
+      "ModelDataUrl"="{{ model_data }}"
+    ),
+    "ExecutionRoleArn"="{{ role }}",
+    "S3Operations"=list(
+      "S3Upload"=list(
+        list(
+          "Path"="{{ source_dir }}",
+          "Bucket"="output",
+          "Key"=sprintf("sagemaker-chainer-%s/source/sourcedir.tar.gz", TIME_STAMP),
+          "Tar"=TRUE
+        )
+      )
+    )
+  )
+  expect_equal(config[sort(names(config))], expected_config[sort(names(expected_config))])
+})
+
+test_that("test_amazon_alg_model_config", {
+  sms = sagemaker_session()
+  pca_model = PCAModel$new(
+    model_data="{{ model_data }}", role="{{ role }}", sagemaker_session=sms
+  )
+  with_mock(
+    `sagemaker.core::sagemaker_timestamp` = mock_fun(TIME_STAMP), {
+      config = model_config(model=pca_model)
+  })
+  expected_config = list(
+    "ModelName"=sprintf("pca-%s", TIME_STAMP),
+    "PrimaryContainer"=list(
+      "Image"="174872318107.dkr.ecr.us-west-2.amazonaws.com/pca:1",
+      "Environment"=list(),
+      "ModelDataUrl"="{{ model_data }}"
+    ),
+    "ExecutionRoleArn"="{{ role }}"
+  )
+  expect_equal(config[sort(names(config))], expected_config[sort(names(expected_config))])
+})
+
+test_that("test_model_config_from_framework_estimator", {
+  sms = sagemaker_session()
+  mxnet_estimator = MXNet$new(
+    entry_point="{{ entry_point }}",
+    source_dir="{{ source_dir }}",
+    py_version="py3",
+    framework_version="1.6.0",
+    role="{{ role }}",
+    instance_count=1,
+    instance_type="ml.m4.xlarge",
+    sagemaker_session=sms,
+    base_job_name="{{ base_job_name }}",
+    hyperparameters=list("batch_size"=100)
+  )
+
+  data = "{{ training_data }}"
+
+  # simulate training
+  with_mock(
+    `sagemaker.core::sagemaker_timestamp` = mock_fun(TIME_STAMP),
+    `fs::is_file` = mock_fun(TRUE),
+    `sagemaker.core::tar_and_upload_dir` = mock_fun(),
+    `sagemaker.core::parse_s3_url` = mock_fun(list(
+      bucket = "output",key=sprintf("{{{{ base_job_name }}}}-%s/source/sourcedir.tar.gz", TIME_STAMP))
+    ), {
+      training_config(mxnet_estimator, data)
+      config = model_config_from_estimator(
+        estimator=mxnet_estimator,
+        task_id="task_id",
+        task_type="training",
+        instance_type="ml.c4.xlarge"
+      )
+  })
+  expected_config = list(
+    "ModelName"=sprintf("mxnet-inference-%s", TIME_STAMP),
+    "PrimaryContainer"=list(
+      "Image"="763104351884.dkr.ecr.us-west-2.amazonaws.com/mxnet-inference:1.6.0-cpu-py3",
+      "Environment"=list(
+        "SAGEMAKER_PROGRAM"="{{ entry_point }}",
+        "SAGEMAKER_SUBMIT_DIRECTORY"=paste0(
+          "s3://output/{{ ti.xcom_pull(task_ids='task_id')['Training']",
+          "['TrainingJobName'] }}/source/sourcedir.tar.gz"),
+        "SAGEMAKER_CONTAINER_LOG_LEVEL"="20",
+        "SAGEMAKER_REGION"="us-west-2"
+      ),
+      "ModelDataUrl"=paste0(
+        "s3://output/{{ ti.xcom_pull(task_ids='task_id')['Training']['TrainingJobName'] }}",
+        "/output/model.tar.gz")
+    ),
+    "ExecutionRoleArn"="{{ role }}"
+  )
+  expect_equal(config[sort(names(config))], expected_config[sort(names(expected_config))])
+})
+
+test_that("test_model_config_from_amazon_alg_estimator", {
+  sms = sagemaker_session()
+  knn_estimator = KNN$new(
+    role="{{ role }}",
+    instance_count="{{ instance_count }}",
+    instance_type="ml.m4.xlarge",
+    k=16,
+    sample_size=128,
+    predictor_type="regressor",
+    sagemaker_session=sms
+  )
+
+  record = RecordSet$new("{{ record }}", 10000, 100, "S3Prefix")
+
+  with_mock(
+    `sagemaker.core::sagemaker_timestamp` = mock_fun(TIME_STAMP), {
+      # simulate training
+      training_config(knn_estimator, record, mini_batch_size=256)
+      config = model_config_from_estimator(
+        estimator=knn_estimator, task_id="task_id", task_type="tuning"
+      )
+  })
+  expected_config = list(
+    "ModelName"=sprintf("knn-%s", TIME_STAMP),
+    "PrimaryContainer"=list(
+      "Image"="174872318107.dkr.ecr.us-west-2.amazonaws.com/knn:1",
+      "Environment"=list(),
+      "ModelDataUrl"=paste0(
+        "s3://output/{{ ti.xcom_pull(task_ids='task_id')['Tuning']['BestTrainingJob']",
+        "['TrainingJobName'] }}/output/model.tar.gz"
+      )
+    ),
+    "ExecutionRoleArn"="{{ role }}"
+  )
+  expect_equal(config[sort(names(config))], expected_config[sort(names(expected_config))])
+})
+
+test_that("test_transform_config", {
+  sms = sagemaker_session()
+  tf_transformer = Transformer$new(
+    model_name="tensorflow-model",
+    instance_count="{{ instance_count }}",
+    instance_type="ml.p2.xlarge",
+    strategy="SingleRecord",
+    assemble_with="Line",
+    output_path="{{ output_path }}",
+    output_kms_key="{{ kms_key }}",
+    accept="{{ accept }}",
+    max_concurrent_transforms="{{ max_parallel_job }}",
+    max_payload="{{ max_payload }}",
+    tags=list(list("{{ key }}"="{{ value }}")),
+    env=list("{{ key }}"="{{ value }}"),
+    base_transform_job_name="tensorflow-transform",
+    sagemaker_session=sms,
+    volume_kms_key="{{ kms_key }}"
+  )
+
+  data = "{{ transform_data }}"
+
+  with_mock(
+    `sagemaker.core::sagemaker_timestamp` = mock_fun(TIME_STAMP), {
+      config = transform_config(
+        tf_transformer,
+        data,
+        data_type="S3Prefix",
+        content_type="{{ content_type }}",
+        compression_type="{{ compression_type }}",
+        split_type="{{ split_type }}",
+        input_filter="{{ input_filter }}",
+        output_filter="{{ output_filter }}",
+        join_source="{{ join_source }}"
+      )
+  })
+  expected_config = list(
+    "TransformJobName"=sprintf("tensorflow-transform-%s", TIME_STAMP),
+    "ModelName"="tensorflow-model",
+    "TransformInput"=list(
+      "DataSource"=list(
+        "S3DataSource"=list("S3DataType"="S3Prefix", "S3Uri"="{{ transform_data }}")
+      ),
+      "ContentType"="{{ content_type }}",
+      "CompressionType"="{{ compression_type }}",
+      "SplitType"="{{ split_type }}"
+    ),
+    "TransformOutput"=list(
+      "S3OutputPath"="{{ output_path }}",
+      "KmsKeyId"="{{ kms_key }}",
+      "AssembleWith"="Line",
+      "Accept"="{{ accept }}"
+    ),
+    "TransformResources"=list(
+      "InstanceCount"="{{ instance_count }}",
+      "InstanceType"="ml.p2.xlarge",
+      "VolumeKmsKeyId"="{{ kms_key }}"
+    ),
+    "BatchStrategy"="SingleRecord",
+    "MaxConcurrentTransforms"="{{ max_parallel_job }}",
+    "MaxPayloadInMB"="{{ max_payload }}",
+    "Environment"=list("{{ key }}"="{{ value }}"),
+    "Tags"=list(list("{{ key }}"="{{ value }}")),
+    "DataProcessing"=list(
+      "InputFilter"="{{ input_filter }}",
+      "OutputFilter"="{{ output_filter }}",
+      "JoinSource"="{{ join_source }}"
+    )
+  )
+  expect_equal(config[sort(names(config))], expected_config[sort(names(expected_config))])
+})
+
+test_that("test_transform_config_from_framework_estimator", {
+  sms = sagemaker_session()
+  mxnet_estimator = MXNet$new(
+    entry_point="{{ entry_point }}",
+    source_dir="{{ source_dir }}",
+    py_version="py3",
+    framework_version="1.6.0",
+    role="{{ role }}",
+    instance_count=1,
+    instance_type="ml.m4.xlarge",
+    sagemaker_session=sms,
+    base_job_name="{{ base_job_name }}",
+    hyperparameters=list("batch_size"=100)
+  )
+
+  train_data = "{{ train_data }}"
+  transform_data = "{{ transform_data }}"
+
+  with_mock(
+    `sagemaker.core::sagemaker_timestamp` = mock_fun(TIME_STAMP),
+    `fs::is_file` = mock_fun(TRUE),
+    `sagemaker.core::tar_and_upload_dir` = mock_fun(),
+    `sagemaker.core::parse_s3_url` = mock_fun(
+      list(bucket = "output", key = sprintf("{{{{ base_job_name }}}}-%s/source/sourcedir.tar.gz", TIME_STAMP))), {
+      # simulate training
+      training_config(mxnet_estimator, train_data)
+
+      config = transform_config_from_estimator(
+        estimator=mxnet_estimator,
+        task_id="task_id",
+        task_type="training",
+        instance_count="{{ instance_count }}",
+        instance_type="ml.p2.xlarge",
+        data=transform_data,
+        input_filter="{{ input_filter }}",
+        output_filter="{{ output_filter }}",
+        join_source="{{ join_source }}"
+      )
+  })
+  expected_config = list(
+    "Model"=list(
+      "ModelName"=sprintf("mxnet-inference-%s", TIME_STAMP),
+      "PrimaryContainer"=list(
+        "Image"="763104351884.dkr.ecr.us-west-2.amazonaws.com/mxnet-inference:1.6.0-gpu-py3",
+        "Environment"=list(
+          "SAGEMAKER_PROGRAM"="{{ entry_point }}",
+          "SAGEMAKER_SUBMIT_DIRECTORY"=paste0(
+            "s3://output/{{ ti.xcom_pull(task_ids='task_id')",
+            "['Training']['TrainingJobName'] }}",
+            "/source/sourcedir.tar.gz"),
+          "SAGEMAKER_CONTAINER_LOG_LEVEL"="20",
+          "SAGEMAKER_REGION"="us-west-2"
+        ),
+        "ModelDataUrl"=paste0(
+          "s3://output/{{ ti.xcom_pull(task_ids='task_id')['Training']['TrainingJobName'] }}",
+          "/output/model.tar.gz")
+      ),
+      "ExecutionRoleArn"="{{ role }}"
+    ),
+    "Transform"=list(
+      "TransformJobName"=sprintf("{{ base_job_name }}-%s", TIME_STAMP),
+      "ModelName"=sprintf("mxnet-inference-%s", TIME_STAMP),
+      "TransformInput"=list(
+        "DataSource"=list(
+          "S3DataSource"=list("S3DataType"="S3Prefix", "S3Uri"="{{ transform_data }}")
+        )
+      ),
+      "TransformOutput"=list("S3OutputPath"=sprintf("s3://output/{{ base_job_name }}-%s", TIME_STAMP)),
+      "TransformResources"=list(
+        "InstanceCount"="{{ instance_count }}",
+        "InstanceType"="ml.p2.xlarge"
+      ),
+      "DataProcessing"=list(
+        "InputFilter"="{{ input_filter }}",
+        "OutputFilter"="{{ output_filter }}",
+        "JoinSource"="{{ join_source }}"
+      ),
+      "Environment"=list()
+    )
+  )
+  expect_equal(config[sort(names(config))], expected_config[sort(names(expected_config))])
+})
+
+test_that("test_transform_config_from_amazon_alg_estimator", {
+  sms = sagemaker_session()
+  knn_estimator = KNN$new(
+    role="{{ role }}",
+    instance_count="{{ instance_count }}",
+    instance_type="ml.m4.xlarge",
+    k=16,
+    sample_size=128,
+    predictor_type="regressor",
+    sagemaker_session=sms
+  )
+  record = RecordSet$new("{{ record }}", 10000, 100, "S3Prefix")
+  transform_data = "{{ transform_data }}"
+
+  with_mock(
+    `sagemaker.core::sagemaker_timestamp` = mock_fun(TIME_STAMP), {
+      # simulate training
+      training_config(knn_estimator, record, mini_batch_size=256)
+      config = transform_config_from_estimator(
+        estimator=knn_estimator,
+        task_id="task_id",
+        task_type="training",
+        instance_count="{{ instance_count }}",
+        instance_type="ml.p2.xlarge",
+        data=transform_data
+      )
+  })
+  expected_config = list(
+    "Model"=list(
+      "ModelName"=sprintf("knn-%s", TIME_STAMP),
+      "PrimaryContainer"=list(
+        "Image"="174872318107.dkr.ecr.us-west-2.amazonaws.com/knn:1",
+        "Environment"=list(),
+        "ModelDataUrl"=paste0(
+          "s3://output/{{ ti.xcom_pull(task_ids='task_id')['Training']['TrainingJobName'] }}",
+          "/output/model.tar.gz")
+      ),
+      "ExecutionRoleArn"="{{ role }}"
+    ),
+    "Transform"=list(
+      "TransformJobName"=sprintf("knn-%s", TIME_STAMP),
+      "ModelName"=sprintf("knn-%s", TIME_STAMP),
+      "TransformInput"=list(
+        "DataSource"=list(
+          "S3DataSource"=list("S3DataType"="S3Prefix", "S3Uri"="{{ transform_data }}")
+        )
+      ),
+      "TransformOutput"=list("S3OutputPath"=sprintf("s3://output/knn-%s", TIME_STAMP)),
+      "TransformResources"=list(
+        "InstanceCount"="{{ instance_count }}",
+        "InstanceType"="ml.p2.xlarge"
+      )
+    )
+  )
+  expect_equal(config[sort(names(config))], expected_config[sort(names(expected_config))])
+})
+
+test_that("test_deploy_framework_model_config", {
+  sms = sagemaker_session()
+  chainer_model = ChainerModel$new(
+    model_data="{{ model_data }}",
+    role="{{ role }}",
+    entry_point="{{ entry_point }}",
+    source_dir="{{ source_dir }}",
+    image_uri=NULL,
+    py_version="py3",
+    framework_version="5.0.0",
+    model_server_workers="{{ model_server_worker }}",
+    sagemaker_session=sms
+  )
+  with_mock(
+    `sagemaker.core::sagemaker_timestamp` = mock_fun(TIME_STAMP),{
+      config = deploy_config(
+        chainer_model, initial_instance_count="{{ instance_count }}", instance_type="ml.m4.xlarge"
+      )
+  })
+  expected_config = list(
+    "Model"=list(
+      "ModelName"=sprintf("sagemaker-chainer-%s", TIME_STAMP),
+      "PrimaryContainer"=list(
+        "Image"="520713654638.dkr.ecr.us-west-2.amazonaws.com/sagemaker-chainer:5.0.0-cpu-py3",
+        "Environment"=list(
+          "SAGEMAKER_PROGRAM"="{{ entry_point }}",
+          "SAGEMAKER_SUBMIT_DIRECTORY"=sprintf(
+            "s3://output/sagemaker-chainer-%s/source/sourcedir.tar.gz", TIME_STAMP),
+          "SAGEMAKER_CONTAINER_LOG_LEVEL"="20",
+          "SAGEMAKER_REGION"="us-west-2",
+          "SAGEMAKER_MODEL_SERVER_WORKERS"="{{ model_server_worker }}"
+        ),
+        "ModelDataUrl"="{{ model_data }}"
+      ),
+      "ExecutionRoleArn"="{{ role }}"
+    ),
+    "EndpointConfig"=list(
+      "EndpointConfigName"=sprintf("sagemaker-chainer-%s", TIME_STAMP),
+      "ProductionVariants"=list(
+        list(
+          "ModelName"=sprintf("sagemaker-chainer-%s", TIME_STAMP),
+          "VariantName"="AllTraffic",
+          "InitialVariantWeight"=1,
+          "InitialInstanceCount"="{{ instance_count }}",
+          "InstanceType"="ml.m4.xlarge"
+        )
+      )
+    ),
+    "Endpoint"=list(
+      "EndpointName"=sprintf("sagemaker-chainer-%s", TIME_STAMP),
+      "EndpointConfigName"=sprintf("sagemaker-chainer-%s", TIME_STAMP)
+    ),
+    "S3Operations"=list(
+      "S3Upload"=list(
+        list(
+          "Path"="{{ source_dir }}",
+          "Bucket"="output",
+          "Key"=sprintf("sagemaker-chainer-%s/source/sourcedir.tar.gz", TIME_STAMP),
+          "Tar"=TRUE
+        )
+      )
+    )
+  )
+  expect_equal(config[sort(names(config))], expected_config[sort(names(expected_config))])
+})
+
+test_that("test_deploy_amazon_alg_model_config", {
+  sms = sagemaker_session()
+  pca_model = PCAModel$new(
+    model_data="{{ model_data }}", role="{{ role }}", sagemaker_session=sms
+  )
+  with_mock(
+    `sagemaker.core::sagemaker_timestamp` = mock_fun(TIME_STAMP),{
+      config = deploy_config(
+        pca_model, initial_instance_count="{{ instance_count }}", instance_type="ml.c4.xlarge"
+      )
+  })
+  expected_config = list(
+    "Model"=list(
+      "ModelName"=sprintf("pca-%s", TIME_STAMP),
+      "PrimaryContainer"=list(
+        "Image"="174872318107.dkr.ecr.us-west-2.amazonaws.com/pca:1",
+        "Environment"=list(),
+        "ModelDataUrl"="{{ model_data }}"
+      ),
+      "ExecutionRoleArn"="{{ role }}"
+    ),
+    "EndpointConfig"=list(
+      "EndpointConfigName"=sprintf("pca-%s", TIME_STAMP),
+      "ProductionVariants"=list(
+        list(
+          "ModelName"=sprintf("pca-%s", TIME_STAMP),
+          "VariantName"="AllTraffic",
+          "InitialVariantWeight"=1,
+          "InitialInstanceCount"="{{ instance_count }}",
+          "InstanceType"="ml.c4.xlarge"
+        )
+      )
+    ),
+    "Endpoint"=list(
+      "EndpointName"=sprintf("pca-%s", TIME_STAMP),
+      "EndpointConfigName"=sprintf("pca-%s", TIME_STAMP)
+    )
+  )
+  expect_equal(config[sort(names(config))], expected_config[sort(names(expected_config))])
+})
+
+test_that("test_deploy_config_from_framework_estimator", {
+  sms = sagemaker_session()
+  mxnet_estimator = MXNet$new(
+    entry_point="{{ entry_point }}",
+    source_dir="{{ source_dir }}",
+    py_version="py3",
+    framework_version="1.6.0",
+    role="{{ role }}",
+    instance_count=1,
+    instance_type="ml.m4.xlarge",
+    sagemaker_session=sms,
+    base_job_name="{{ base_job_name }}",
+    hyperparameters=list("batch_size"=100)
+  )
+
+  train_data = "{{ train_data }}"
+
+  with_mock(
+    `sagemaker.core::sagemaker_timestamp` = mock_fun(TIME_STAMP),
+    `fs::is_file` = mock_fun(TRUE),
+    `sagemaker.core::tar_and_upload_dir` = mock_fun(),
+    `sagemaker.core::parse_s3_url` = mock_fun(
+      list(
+        bucket = "output",
+        key = sprintf("{{{{ base_job_name }}}}-%s/source/sourcedir.tar.gz", TIME_STAMP)
+      )
+    ), {
+      # simulate training
+      training_config(mxnet_estimator, train_data)
+
+      config = deploy_config_from_estimator(
+        estimator=mxnet_estimator,
+        task_id="task_id",
+        task_type="training",
+        initial_instance_count="{{ instance_count}}",
+        instance_type="ml.c4.large",
+        endpoint_name="mxnet-endpoint"
+      )
+  })
+  expected_config = list(
+    "Model"=list(
+      "ModelName"=sprintf("mxnet-inference-%s", TIME_STAMP),
+      "PrimaryContainer"=list(
+        "Image"="763104351884.dkr.ecr.us-west-2.amazonaws.com/mxnet-inference:1.6.0-cpu-py3",
+        "Environment"=list(
+          "SAGEMAKER_PROGRAM"="{{ entry_point }}",
+          "SAGEMAKER_SUBMIT_DIRECTORY"=paste0(
+            "s3://output/{{ ti.xcom_pull(task_ids='task_id')['Training']",
+            "['TrainingJobName'] }}/source/sourcedir.tar.gz"),
+          "SAGEMAKER_CONTAINER_LOG_LEVEL"="20",
+          "SAGEMAKER_REGION"="us-west-2"
+        ),
+        "ModelDataUrl"=paste0(
+          "s3://output/{{ ti.xcom_pull(task_ids='task_id')['Training']['TrainingJobName'] }}",
+          "/output/model.tar.gz")
+      ),
+      "ExecutionRoleArn"="{{ role }}"
+    ),
+    "EndpointConfig"=list(
+      "EndpointConfigName"=sprintf("mxnet-inference-%s", TIME_STAMP),
+      "ProductionVariants"=list(
+        list(
+          "ModelName"=sprintf("mxnet-inference-%s", TIME_STAMP),
+          "VariantName"="AllTraffic",
+          "InitialVariantWeight"=1,
+          "InitialInstanceCount"="{{ instance_count}}",
+          "InstanceType"="ml.c4.large"
+        )
+      )
+    ),
+    "Endpoint"=list(
+      "EndpointName"="mxnet-endpoint",
+      "EndpointConfigName"=sprintf("mxnet-inference-%s", TIME_STAMP)
+    )
+  )
+  expect_equal(config[sort(names(config))], expected_config[sort(names(expected_config))])
+})
+
+test_that("test_deploy_config_from_amazon_alg_estimator", {
+  sms = sagemaker_session()
+  knn_estimator = KNN$new(
+    role="{{ role }}",
+    instance_count="{{ instance_count }}",
+    instance_type="ml.m4.xlarge",
+    k=16,
+    sample_size=128,
+    predictor_type="regressor",
+    sagemaker_session=sms
+  )
+
+  record = RecordSet$new("{{ record }}", 10000, 100, "S3Prefix")
+
+  with_mock(
+    `sagemaker.core::sagemaker_timestamp` = mock_fun(TIME_STAMP), {
+      # simulate training
+      training_config(knn_estimator, record, mini_batch_size=256)
+
+      config = deploy_config_from_estimator(
+        estimator=knn_estimator,
+        task_id="task_id",
+        task_type="tuning",
+        initial_instance_count="{{ instance_count }}",
+        instance_type="ml.p2.xlarge"
+      )
+  })
+  expected_config = list(
+    "Model"=list(
+      "ModelName"=sprintf("knn-%s", TIME_STAMP),
+      "PrimaryContainer"=list(
+        "Image"="174872318107.dkr.ecr.us-west-2.amazonaws.com/knn:1",
+        "Environment"=list(),
+        "ModelDataUrl"=paste0(
+          "s3://output/{{ ti.xcom_pull(task_ids='task_id')['Tuning']['BestTrainingJob']",
+          "['TrainingJobName'] }}/output/model.tar.gz")
+      ),
+      "ExecutionRoleArn"="{{ role }}"
+    ),
+    "EndpointConfig"=list(
+      "EndpointConfigName"=sprintf("knn-%s", TIME_STAMP),
+      "ProductionVariants"=list(
+        list(
+          "ModelName"=sprintf("knn-%s", TIME_STAMP),
+          "VariantName"="AllTraffic",
+          "InitialVariantWeight"=1,
+          "InitialInstanceCount"="{{ instance_count }}",
+          "InstanceType"="ml.p2.xlarge"
+        )
+      )
+    ),
+    "Endpoint"=list(
+      "EndpointName"=sprintf("knn-%s", TIME_STAMP),
+      "EndpointConfigName"=sprintf("knn-%s", TIME_STAMP)
+    )
+  )
+  expect_equal(config[sort(names(config))], expected_config[sort(names(expected_config))])
+})
+
+test_that("test_processing_config", {
+  sms = sagemaker_session()
+  network_config = NetworkConfig$new(
+    encrypt_inter_container_traffic=FALSE,
+    enable_network_isolation=TRUE,
+    security_group_ids=list("sg1"),
+    subnets=list("subnet1")
+  )
+
+  processor = Processor$new(
+    role="arn:aws:iam::0122345678910:role/SageMakerPowerUser",
+    image_uri="{{ image_uri }}",
+    instance_count=2,
+    instance_type="ml.p2.xlarge",
+    entrypoint="{{ entrypoint }}",
+    volume_size_in_gb=30,
+    volume_kms_key="{{ kms_key }}",
+    output_kms_key="{{ kms_key }}",
+    max_runtime_in_seconds=3600,
+    base_job_name="processing_base_job_name",
+    sagemaker_session=sms,
+    tags=list(list("{{ key }}"="{{ value }}")),
+    env=list("{{ key }}"="{{ value }}"),
+    network_config=network_config
+  )
+
+  outputs = list(
+    ProcessingOutput$new(
+      output_name="AnalyticsOutputName",
+      source="{{ Local Path }}",
+      destination="{{ S3Uri }}",
+      s3_upload_mode="EndOfJob"
+    )
+  )
+  inputs = list(
+    ProcessingInput$new(
+      input_name="AnalyticsInputName",
+      source="{{ S3Uri }}",
+      destination="{{ Local Path }}",
+      s3_data_type="S3Prefix",
+      s3_input_mode="File",
+      s3_data_distribution_type="FullyReplicated",
+      s3_compression_type="None"
+    )
+  )
+  experiment_config = list()
+  experiment_config[["ExperimentName"]] = "ExperimentName"
+  experiment_config[["TrialName"]] = "TrialName"
+  experiment_config[["TrialComponentDisplayName"]] = "TrialComponentDisplayName"
+
+  with_mock(
+    `sagemaker.core::sagemaker_timestamp` = mock_fun(TIME_STAMP), {
+    config = processing_config(
+      processor,
+      inputs=inputs,
+      outputs=outputs,
+      job_name="ProcessingJobName",
+      container_arguments=list("container_arg"),
+      container_entrypoint=list("container_entrypoint"),
+      kms_key_id="KmsKeyID",
+      experiment_config=experiment_config
+    )
+  })
+  expected_config = list(
+    "AppSpecification"=list(
+      "ImageUri"="{{ image_uri }}",
+      "ContainerArguments"=list("container_arg"),
+      "ContainerEntrypoint"=list("container_entrypoint")
+    ),
+    "Environment"=list("{{ key }}"="{{ value }}"),
+    "ExperimentConfig"=list(
+      "ExperimentName"="ExperimentName",
+      "TrialName"="TrialName",
+      "TrialComponentDisplayName"="TrialComponentDisplayName"
+    ),
+    "ProcessingInputs"=list(
+      list(
+        "InputName"="AnalyticsInputName",
+        "AppManaged"=FALSE,
+        "S3Input"=list(
+          "S3Uri"="{{ S3Uri }}",
+          "LocalPath"="{{ Local Path }}",
+          "S3DataType"="S3Prefix",
+          "S3InputMode"="File",
+          "S3DataDistributionType"="FullyReplicated",
+          "S3CompressionType"="None"
+        )
+      )
+    ),
+    "ProcessingJobName"="ProcessingJobName",
+    "ProcessingOutputConfig"=list(
+      "Outputs"=list(
+        list(
+          "OutputName"="AnalyticsOutputName",
+          "AppManaged"=FALSE,
+          "S3Output"=list(
+            "S3Uri"="{{ S3Uri }}",
+            "LocalPath"="{{ Local Path }}",
+            "S3UploadMode"="EndOfJob"
+          )
+        )
+      ),
+      "KmsKeyId"="KmsKeyID"
+    ),
+    "ProcessingResources"=list(
+      "ClusterConfig"=list(
+        "InstanceCount"=2,
+        "InstanceType"="ml.p2.xlarge",
+        "VolumeSizeInGB"=30,
+        "VolumeKmsKeyId"="{{ kms_key }}"
+      )
+    ),
+    "RoleArn"="arn:aws:iam::0122345678910:role/SageMakerPowerUser",
+    "StoppingCondition"=list("MaxRuntimeInSeconds"=3600),
+    "Tags"=list(list("{{ key }}"="{{ value }}")),
+    "NetworkConfig"=list(
+      "EnableNetworkIsolation"=TRUE,
+      "EnableInterContainerTrafficEncryption"=FALSE,
+      "VpcConfig"=list("SecurityGroupIds"=list("sg1"), "Subnets"=list("subnet1"))
+    )
+  )
+  expect_equal(config[sort(names(config))], expected_config[sort(names(expected_config))])
 })
