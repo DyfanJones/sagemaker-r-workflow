@@ -217,7 +217,6 @@ training_config = function(estimator,
                            job_name=NULL,
                            mini_batch_size=NULL){
   train_config = training_base_config(estimator, inputs, job_name, mini_batch_size)
-
   train_config[["TrainingJobName"]] = estimator$.current_job_name
 
   if (!is.null(estimator$tags))
@@ -448,7 +447,7 @@ update_submit_s3_uri=function(estimator, job_name){
   # update the S3 URI with the latest training job.
   # s3://path/old_job/source/sourcedir.tar.gz will become s3://path/new_job/source/sourcedir.tar.gz
   submit_uri = estimator$uploaded_code$s3_prefix
-  submit_uri = gsub(pattern, job_name, submit_uri)
+  submit_uri = gsub(pattern, job_name, submit_uri, perl = T)
   script_name = estimator$uploaded_code$script_name
   UploadedCode$s3_prefix=submit_uri
   UploadedCode$script_name=script_name
@@ -718,8 +717,8 @@ transform_config = function(transformer,
       transformer$sagemaker_session$default_bucket(), transformer$.current_job_name
     )
   }
-  job_config = transformer$.__enclose_env__$private$.load_config(
-    data, data_type, content_type, compression_type, split_type, transformer
+  job_config = transformer$.__enclos_env__$private$.load_config(
+    data, data_type, content_type, compression_type, split_type
   )
 
   config = list(
@@ -729,7 +728,7 @@ transform_config = function(transformer,
     "TransformOutput"=job_config[["output_config"]],
     "TransformResources"=job_config[["resource_config"]])
 
-  data_processing = transformer$.__enclose_env__$private$.prepare_data_processing(
+  data_processing = transformer$.__enclos_env__$private$.prepare_data_processing(
     input_filter, output_filter, join_source
   )
   if (!is.null(data_processing))
@@ -917,7 +916,7 @@ transform_config_from_estimator = function(estimator,
       role,
       volume_kms_key)
   }
-  transformer.model_name = model_base_config[["ModelName"]]
+  transformer$model_name = model_base_config[["ModelName"]]
 
   transform_base_config = transform_config(
     transformer,
@@ -968,15 +967,16 @@ deploy_config = function(model,
   endpoint_name = endpoint_name %||% name
   endpoint_base_config = list("EndpointName"=endpoint_name, "EndpointConfigName"=name)
 
+  # if there is s3 operations needed for model, move it to root level of config
+  s3_operations = model_base_config[["S3Operations"]]
+  model_base_config[["S3Operations"]] = NULL
+
   config = list(
     "Model"=model_base_config,
     "EndpointConfig"=config_options,
     "Endpoint"=endpoint_base_config
   )
 
-  # if there is s3 operations needed for model, move it to root level of config
-  s3_operations = model_base_config[["S3Operations"]]
-  model_base_config[["S3Operations"]] = NULL
   if (!is.null(s3_operations))
     config[["S3Operations"]] = s3_operations
 
@@ -1049,6 +1049,7 @@ deploy_config_from_estimator = function(estimator,
 #'              The KmsKeyId is applied to all outputs.
 #' @return dict: Processing config that can be directly used by
 #'            SageMakerProcessingOperator in Airflow.
+#' @export
 processing_config = function(processor,
                              inputs=NULL,
                              outputs=NULL,
@@ -1078,8 +1079,7 @@ processing_config = function(processor,
   )
   config[["ProcessingOutputConfig"]] = processing_output_config
 
-  if (!is.null(experiment_config))
-    config[["ExperimentConfig"]] = experiment_config
+  config[["ExperimentConfig"]] = experiment_config
 
   app_specification = sagemaker.common::ProcessingJob$public_methods$prepare_app_specification(
     container_arguments, container_entrypoint, processor$image_uri
