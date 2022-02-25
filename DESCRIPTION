@@ -1,7 +1,7 @@
 Package: sagemaker.workflow
 Type: Package
 Title: sagemaker pipeline and workflows
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(person("Dyfan", "Jones", email="dyfan.r.jones@gmail.com", role= c("aut", "cre")),
              person("Amazon.com, Inc.", role = "cph"))
 Description: `sagemaker` pipeline and workflows.
@@ -13,6 +13,7 @@ Imports:
     methods,
     digest,
     processx,
+    data.table,
     R6,
     sagemaker.core,
     sagemaker.common,
@@ -22,7 +23,8 @@ Imports:
     uuid
 Suggests:
     crayon,
-    testthat
+    testthat (>= 3.0.0),
+    mockthat
 Remotes:
     DyfanJones/sagemaker-r-core,
     DyfanJones/sagemaker-r-common,
@@ -60,3 +62,4 @@ Collate:
     'zzz.R'
 Depends: 
     R (>= 2.10)
+Config/testthat/edition: 3

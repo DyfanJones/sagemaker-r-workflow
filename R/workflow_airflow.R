@@ -21,7 +21,7 @@ prepare_framework = function(estimator,
   s3_split = list()
   if (!is.null(estimator$code_location)){
     s3_split = parse_s3_url(estimator$code_location)
-    s3_split$key = fs::path(s3_split$keykey, estimator$.current_job_name, "source", "sourcedir.tar.gz")
+    s3_split$key = as.character(fs::path(s3_split$key, estimator$.current_job_name, "source", "sourcedir.tar.gz"))
   } else if (!is.null(estimator$uploaded_code)){
     s3_split = parse_s3_url(estimator$uploaded_code$s3_prefix)
   } else {
@@ -32,22 +32,24 @@ prepare_framework = function(estimator,
   script = basename(estimator$entry_point)
 
   if (!is.null(estimator$source_dir) && grepl("^s3://", tolower(estimator$source_dir))){
-      code_dir = estimator$source_dir
-      UploadedCode$s3_prefix=code_dir
-      UploadedCode$script_name= script
-      estimator$uploaded_code = UploadedCode
+    code_dir = estimator$source_dir
+    UploadedCode$s3_prefix=code_dir
+    UploadedCode$script_name= script
+    estimator$uploaded_code = UploadedCode
   } else {
-      code_dir = sprintf("s3://%s/%s", s3_split$bucket, s3_split$key)
-      UploadedCode$s3_prefix=code_dir
-      UploadedCode$script_name= script
-      estimator$uploaded_code = UploadedCode
-      s3_operations[["S3Upload"]] = list(
-        list(
-          "Path"=(estimator$source_dir %||% estimator$entry_point),
-          "Bucket"=s3_split$bucket,
-          "Key"=s3_split$key,
-          "Tar"=TRUE)
-      )
+    code_dir = sprintf("s3://%s/%s", s3_split$bucket, s3_split$key)
+    UploadedCode$s3_prefix=code_dir
+    UploadedCode$script_name= script
+    estimator$uploaded_code = UploadedCode
+    ll = deparse(substitute(s3_operations))
+    s3_operations[["S3Upload"]] = list(
+      list(
+        "Path"=(estimator$source_dir %||% estimator$entry_point),
+        "Bucket"=s3_split$bucket,
+        "Key"=s3_split$key,
+        "Tar"=TRUE)
+    )
+    assign(ll, s3_operations, envir = parent.frame())
   }
   estimator$.hyperparameters[[model_parameters$DIR_PARAM_NAME]] = code_dir
   estimator$.hyperparameters[[model_parameters$SCRIPT_PARAM_NAME]] = script
@@ -146,11 +148,10 @@ training_base_config = function(estimator,
   }
   if (inherits(estimator, "Framework")){
     prepare_framework(estimator, s3_operations)
-
   } else if (inherits(estimator, "AmazonAlgorithmEstimatorBase")){
     prepare_amazon_algorithm_estimator(estimator, inputs, mini_batch_size)
   }
-  job_config = .Job$new()$.__enclos_env__$.load_config(
+  job_config = .Job$new()$.__enclos_env__$private$.load_config(
     inputs, estimator, expand_role=FALSE, validate_uri=FALSE)
 
   train_config = list(
@@ -216,7 +217,6 @@ training_config = function(estimator,
                            job_name=NULL,
                            mini_batch_size=NULL){
   train_config = training_base_config(estimator, inputs, job_name, mini_batch_size)
-
   train_config[["TrainingJobName"]] = estimator$.current_job_name
 
   if (!is.null(estimator$tags))
@@ -249,7 +249,7 @@ training_config = function(estimator,
 #'              where each instance is a different channel of training data.
 #'              * (dict[str, one the forms above]): Required by only tuners created via
 #'              the factory method ``HyperparameterTuner.create()``. The keys should be the
-#'              same estimator names as keys for the ``estimator_dict`` argument of the
+#'              same estimator names as keys for the ``estimator_list`` argument of the
 #'              ``HyperparameterTuner.create()`` method.
 #' @param job_name (str): Specify a tuning job name if needed.
 #' @param include_cls_metadata : It can take one of the following two forms.
@@ -261,8 +261,8 @@ training_config = function(estimator,
 #'              to ``False``.
 #'              * (dict[str, bool]) - This version should be used for tuners created via the factory
 #'              method ``HyperparameterTuner.create()``, to specify the flag for individual
-#'              estimators provided in the ``estimator_dict`` argument of the method. The keys
-#'              would be the same estimator names as in ``estimator_dict``. If one estimator
+#'              estimators provided in the ``estimator_list`` argument of the method. The keys
+#'              would be the same estimator names as in ``estimator_list``. If one estimator
 #'              doesn't need the flag set, then no need to include it in the dictionary. If none
 #'              of the estimators need the flag set, then an empty dictionary ``{}`` must be used.
 #' @param mini_batch_size : It can take one of the following two forms.
@@ -271,8 +271,8 @@ training_config = function(estimator,
 #'              estimator.
 #'              * (dict[str, int]) - This version should be used for tuners created via the factory
 #'              method ``HyperparameterTuner.create()``, to specify the value for individual
-#'              estimators provided in the ``estimator_dict`` argument of the method. The keys
-#'              would be the same estimator names as in ``estimator_dict``. If one estimator
+#'              estimators provided in the ``estimator_list`` argument of the method. The keys
+#'              would be the same estimator names as in ``estimator_list``. If one estimator
 #'              doesn't need the value set, then no need to include it in the dictionary. If
 #'              none of the estimators need the value set, then an empty dictionary ``{}``
 #'              must be used.
@@ -293,12 +293,12 @@ tuning_config = function(tuner,
   if (!is.null(tuner$estimator)){
     ll = .extract_training_config_from_estimator(
       tuner, inputs, include_cls_metadata, mini_batch_size)
-    tune_config[["TrainingJobDefinition"]] = ll$TrainingJobDefinitions
+    tune_config[["TrainingJobDefinition"]] = ll$training_job_def
     s3_operations = ll$s3_operations
   } else {
-    ll = .extract_training_config_list_from_estimator_dict(
+    ll = .extract_training_config_list_from_estimator_list(
       tuner, inputs, include_cls_metadata, mini_batch_size)
-    tune_config[["TrainingJobDefinitions"]] = ll$TrainingJobDefinitions
+    tune_config[["TrainingJobDefinitions"]] = ll$training_job_def
     s3_operations = ll$s3_operations
   }
 
@@ -355,28 +355,28 @@ tuning_config = function(tuner,
   s3_operations = train_config[["S3Operations"]]
   train_config[["S3Operations"]] = NULL
 
-  return(list(train_config, s3_operations))
+  return(list(training_job_def = train_config, s3_operations = s3_operations))
 }
 
 # Extracts a list of training job configs from a Hyperparameter Tuner.
-# It uses the ``estimator_dict`` field.
-.extract_training_config_list_from_estimator_dict = function(tuner,
+# It uses the ``estimator_list`` field.
+.extract_training_config_list_from_estimator_list = function(tuner,
                                                              inputs,
                                                              include_cls_metadata,
                                                              mini_batch_size){
-  estimator_names = sort(names(tuner$estimator_dict))
-  tuner$.__enclos_env__$private$.validate_dict_argument(
+  estimator_names = sort(names(tuner$estimator_list))
+  tuner$.__enclos_env__$private$.validate_list_argument(
     name="inputs", value=inputs, allowed_keys=estimator_names)
-  tuner$.__enclos_env__$private$.validate_dict_argument(
+  tuner$.__enclos_env__$private$.validate_list_argument(
     name="include_cls_metadata", value=include_cls_metadata, allowed_keys=estimator_names
   )
-  tuner$.__enclos_env__$private$.validate_dict_argument(
+  tuner$.__enclos_env__$private$.validate_list_argument(
     name="mini_batch_size", value=mini_batch_size, allowed_keys=estimator_names
   )
 
   train_config_dict = list()
-  for (estimator_name in names(tuner$estimator_dict)){
-    estimator = tuner$estimator_dict[[estimator_name]]
+  for (estimator_name in names(tuner$estimator_list)){
+    estimator = tuner$estimator_list[[estimator_name]]
     train_config_dict[[estimator_name]] = training_base_config(
       estimator=estimator,
       inputs=(if(!islistempty(inputs)) inputs[[estimator_name]] else NULL),
@@ -393,16 +393,16 @@ tuning_config = function(tuner,
   for (estimator_name in sort(names(train_config_dict))){
     train_config = train_config_dict[[estimator_name]]
     train_config[["HyperParameters"]]=NULL
-    train_config[["StaticHyperParameters"]] = tuner$static_hyperparameters_dict[[estimator_name]]
+    train_config[["StaticHyperParameters"]] = tuner$static_hyperparameters_list[[estimator_name]]
 
     train_config[["AlgorithmSpecification"]][[
       "MetricDefinitions"
-    ]] = tuner$metric_definitions_dict[[estimator_name]]
+    ]] = tuner$metric_definitions_list[[estimator_name]]
 
     train_config[["DefinitionName"]] = estimator_name
     train_config[["TuningObjective"]] = list(
       "Type"=tuner$objective_type,
-      "MetricName"=tuner$objective_metric_name_dict[[estimator_name]]
+      "MetricName"=tuner$objective_metric_name_list[[estimator_name]]
     )
     train_config[["HyperParameterRanges"]] = tuner$hyperparameter_ranges_list()[[estimator_name]]
 
@@ -411,7 +411,7 @@ tuning_config = function(tuner,
 
     train_config_list = list.append(train_config_list, train_config)
   }
-  return(list(train_config_list, .merge_s3_operations(s3_operations_list)))
+  return(list(training_job_def = train_config_list, s3_operations = .merge_s3_operations(s3_operations_list)))
 }
 
 # Merge a list of S3 operation dictionaries into one
@@ -420,10 +420,11 @@ tuning_config = function(tuner,
   for (s3_operations in s3_operations_list){
     for (key in names(s3_operations)){
       operations = s3_operations[[key]]
-      if (!(key %in% names(s3_operations_merged)))
+      if (is.null(names(s3_operations_merged)) || !(key %in% names(s3_operations_merged)))
         s3_operations_merged[[key]] = list()
+
       for (operation in operations){
-        if (!(operation %in% names(s3_operations_merged[[key]])))
+        if (!list.exist.in(operation, s3_operations_merged[[key]]))
           s3_operations_merged[[key]] = list.append(s3_operations_merged[[key]], operation)
       }
     }
@@ -446,7 +447,7 @@ update_submit_s3_uri=function(estimator, job_name){
   # update the S3 URI with the latest training job.
   # s3://path/old_job/source/sourcedir.tar.gz will become s3://path/new_job/source/sourcedir.tar.gz
   submit_uri = estimator$uploaded_code$s3_prefix
-  submit_uri = gsub(pattern, job_name, submit_uri)
+  submit_uri = gsub(pattern, job_name, submit_uri, perl = T)
   script_name = estimator$uploaded_code$script_name
   UploadedCode$s3_prefix=submit_uri
   UploadedCode$script_name=script_name
@@ -508,7 +509,7 @@ prepare_framework_container_def = function(model,
   base_name = sagemaker.core::base_name_from_image(deploy_image)
   model$name = model$name %||% sagemaker.core::name_from_base(base_name)
 
-  bucket = model$bucket %||% model$sagemaker_session$.default_bucket
+  bucket = model$bucket %||% model$sagemaker_session$.__enclos_env__$private$.default_bucket
   if (!is.null(model$entry_point)){
     script = basename(model$entry_point)
     key = sprintf("%s/source/sourcedir.tar.gz", model$name)
@@ -523,12 +524,14 @@ prepare_framework_container_def = function(model,
       UploadedCode$s3_prefix=code_dir
       UploadedCode$script_name= script
       model$uploaded_code = UploadedCode
+      ll = deparse(substitute(s3_operations))
       s3_operations[["S3Upload"]] = list(
         list("Path"=(model$source_dir %||% script), "Bucket"=bucket, "Key"=key, "Tar"=TRUE)
       )
+      assign(ll, s3_operations, envir = parent.frame())
     }
   }
-  deploy_env = list(model$env)
+  deploy_env = as.list(model$env)
   deploy_env = modifyList(deploy_env, model$.__enclos_env__$private$.framework_env_vars())
 
   tryCatch({
@@ -714,8 +717,8 @@ transform_config = function(transformer,
       transformer$sagemaker_session$default_bucket(), transformer$.current_job_name
     )
   }
-  job_config = transformer$.__enclose_env__$private$.load_config(
-    data, data_type, content_type, compression_type, split_type, transformer
+  job_config = transformer$.__enclos_env__$private$.load_config(
+    data, data_type, content_type, compression_type, split_type
   )
 
   config = list(
@@ -725,7 +728,7 @@ transform_config = function(transformer,
     "TransformOutput"=job_config[["output_config"]],
     "TransformResources"=job_config[["resource_config"]])
 
-  data_processing = transformer$.__enclose_env__$private$.prepare_data_processing(
+  data_processing = transformer$.__enclos_env__$private$.prepare_data_processing(
     input_filter, output_filter, join_source
   )
   if (!is.null(data_processing))
@@ -913,7 +916,7 @@ transform_config_from_estimator = function(estimator,
       role,
       volume_kms_key)
   }
-  transformer.model_name = model_base_config[["ModelName"]]
+  transformer$model_name = model_base_config[["ModelName"]]
 
   transform_base_config = transform_config(
     transformer,
@@ -964,15 +967,16 @@ deploy_config = function(model,
   endpoint_name = endpoint_name %||% name
   endpoint_base_config = list("EndpointName"=endpoint_name, "EndpointConfigName"=name)
 
+  # if there is s3 operations needed for model, move it to root level of config
+  s3_operations = model_base_config[["S3Operations"]]
+  model_base_config[["S3Operations"]] = NULL
+
   config = list(
     "Model"=model_base_config,
     "EndpointConfig"=config_options,
     "Endpoint"=endpoint_base_config
   )
 
-  # if there is s3 operations needed for model, move it to root level of config
-  s3_operations = model_base_config[["S3Operations"]]
-  model_base_config[["S3Operations"]] = NULL
   if (!is.null(s3_operations))
     config[["S3Operations"]] = s3_operations
 
@@ -1045,6 +1049,7 @@ deploy_config_from_estimator = function(estimator,
 #'              The KmsKeyId is applied to all outputs.
 #' @return dict: Processing config that can be directly used by
 #'            SageMakerProcessingOperator in Airflow.
+#' @export
 processing_config = function(processor,
                              inputs=NULL,
                              outputs=NULL,
@@ -1074,8 +1079,7 @@ processing_config = function(processor,
   )
   config[["ProcessingOutputConfig"]] = processing_output_config
 
-  if (!is.null(experiment_config))
-    config[["ExperimentConfig"]] = experiment_config
+  config[["ExperimentConfig"]] = experiment_config
 
   app_specification = sagemaker.common::ProcessingJob$public_methods$prepare_app_specification(
     container_arguments, container_entrypoint, processor$image_uri

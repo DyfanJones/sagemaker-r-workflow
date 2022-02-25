@@ -34,7 +34,7 @@ For use with an estimator for an Amazon algorithm.
 where each instance is a different channel of training data.
 * (dict[str, one the forms above]): Required by only tuners created via
 the factory method ``HyperparameterTuner.create()``. The keys should be the
-same estimator names as keys for the ``estimator_dict`` argument of the
+same estimator names as keys for the ``estimator_list`` argument of the
 ``HyperparameterTuner.create()`` method.}
 
 \item{job_name}{(str): Specify a tuning job name if needed.}
@@ -48,8 +48,8 @@ have a custom estimator in the Python SDK), then set ``include_cls_metadata``
 to ``False``.
 * (dict[str, bool]) - This version should be used for tuners created via the factory
 method ``HyperparameterTuner.create()``, to specify the flag for individual
-estimators provided in the ``estimator_dict`` argument of the method. The keys
-would be the same estimator names as in ``estimator_dict``. If one estimator
+estimators provided in the ``estimator_list`` argument of the method. The keys
+would be the same estimator names as in ``estimator_list``. If one estimator
 doesn't need the flag set, then no need to include it in the dictionary. If none
 of the estimators need the flag set, then an empty dictionary ``{}`` must be used.}
 
@@ -59,8 +59,8 @@ Amazon algorithm. For other estimators, batch size should be specified in the
 estimator.
 * (dict[str, int]) - This version should be used for tuners created via the factory
 method ``HyperparameterTuner.create()``, to specify the value for individual
-estimators provided in the ``estimator_dict`` argument of the method. The keys
-would be the same estimator names as in ``estimator_dict``. If one estimator
+estimators provided in the ``estimator_list`` argument of the method. The keys
+would be the same estimator names as in ``estimator_list``. If one estimator
 doesn't need the value set, then no need to include it in the dictionary. If
 none of the estimators need the value set, then an empty dictionary ``{}``
 must be used.}

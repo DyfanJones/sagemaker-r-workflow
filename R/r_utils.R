@@ -18,3 +18,15 @@ list.append = function(.data, ...) {
 paws_error_code = function(error){
   return(error[["error_response"]][["__type"]] %||% error[["error_response"]][["Code"]])
 }
+
+# Checks if a list exists with in another list.
+#' @import data.table
+list.exist.in = function(a, b){
+  main_list = rbindlist(b, fill = TRUE)
+  if (length(names(main_list)) == 0) return(FALSE)
+  sub_list = as.data.table(a)
+  if(!all(names(sub_list) %in% names(main_list))) return(FALSE)
+  setcolorder(main_list, names(sub_list))
+  main_list[, check := FALSE][sub_list, check := TRUE, on = names(sub_list)]
+  return(any(main_list$check))
+}

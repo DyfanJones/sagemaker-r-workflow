@@ -27,6 +27,7 @@ jobs:
 
           # install cran dependencies
           pak::pkg_install("R6")
+          pak::pkg_install("data.table")
           pak::pkg_install("fs")
           pak::pkg_install("processx")
           pak::pkg_install("lgr")
@@ -38,6 +39,7 @@ jobs:
 
           # install cran suggest
           pak::pkg_install("testthat")
+          pak::pkg_install("mockthat")
           pak::pkg_install("crayon")
 
           # install sagemaker dev packages
