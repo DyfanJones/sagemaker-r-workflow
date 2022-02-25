@@ -23,7 +23,8 @@ Imports:
     uuid
 Suggests:
     crayon,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    mockthat
 Remotes:
     DyfanJones/sagemaker-r-core,
     DyfanJones/sagemaker-r-common,
