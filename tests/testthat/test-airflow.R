@@ -10,7 +10,6 @@ REGION = "us-west-2"
 BUCKET_NAME = "output"
 TIME_STAMP = "1111"
 
-
 sagemaker_session = function(region=REGION){
   paws_mock = Mock$new(
     name = "PawsSession",
