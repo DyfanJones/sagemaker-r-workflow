@@ -2,8 +2,8 @@
 
 export(.PipeLineExecution)
 export(CacheConfig)
-export(CallbackOuputTypeEnum)
 export(CallbackOutput)
+export(CallbackOutputTypeEnum)
 export(CallbackStep)
 export(CheckJobConfig)
 export(ClarifyCheckConfig)
