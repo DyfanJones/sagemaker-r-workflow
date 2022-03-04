@@ -45,5 +45,6 @@ ExecutionVariables = Enum(
   CURRENT_DATETIME = ExecutionVariable$new("CurrentDateTime"),
   PIPELINE_NAME = ExecutionVariable$new("PipelineName"),
   PIPELINE_ARN = ExecutionVariable$new("PipelineArn"),
+  PIPELINE_EXECUTION_ID = ExecutionVariable$new("PipelineExecutionId"),
   PIPELINE_EXECUTION_ARN = ExecutionVariable$new("PipelineExecutionArn")
 )

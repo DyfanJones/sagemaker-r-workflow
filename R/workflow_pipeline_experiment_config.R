@@ -9,10 +9,10 @@
 #' @import R6
 #' @import sagemaker.core
 
-#' @title Workflow PipeLineExperimentConfig class
+#' @title Workflow PipelineExperimentConfig class
 #' @description Experiment config for SageMaker pipeline.
 #' @export
-PipeLineExperimentConfig = R6Class("PipeLineExperimentConfig",
+PipelineExperimentConfig = R6Class("PipelineExperimentConfig",
   inherit = Entity,
   public = list(
 
