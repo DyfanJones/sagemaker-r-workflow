@@ -13,10 +13,10 @@ Experiment config for SageMaker pipeline.
 ## ------------------------------------------------
 
 # Use pipeline name as the experiment name and pipeline execution id as the trial name::
-PipeLineExperimentConfig$new(
+PipelineExperimentConfig$new(
      ExecutionVariables$PIPELINE_NAME, ExecutionVariables$PIPELINE_EXECUTION_ID)
 # Use a customized experiment name and pipeline execution id as the trial name::
-PipeLineExperimentConfig$new(
+PipelineExperimentConfig$new(
      'MyExperiment', ExecutionVariables$PIPELINE_EXECUTION_ID)
 }
 \section{Super class}{
@@ -60,10 +60,10 @@ the name of the trial that will be created.}
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{# Use pipeline name as the experiment name and pipeline execution id as the trial name::
-PipeLineExperimentConfig$new(
+PipelineExperimentConfig$new(
      ExecutionVariables$PIPELINE_NAME, ExecutionVariables$PIPELINE_EXECUTION_ID)
 # Use a customized experiment name and pipeline execution id as the trial name::
-PipeLineExperimentConfig$new(
+PipelineExperimentConfig$new(
      'MyExperiment', ExecutionVariables$PIPELINE_EXECUTION_ID)
 }
 \if{html}{\out{</div>}}

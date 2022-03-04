@@ -27,6 +27,7 @@ list.exist.in = function(a, b){
   sub_list = as.data.table(a)
   if(!all(names(sub_list) %in% names(main_list))) return(FALSE)
   setcolorder(main_list, names(sub_list))
-  main_list[, check := FALSE][sub_list, check := TRUE, on = names(sub_list)]
+  set(main_list, j="check", value=FALSE)
+  main_list[sub_list, "check" := TRUE, on = names(sub_list)]
   return(any(main_list$check))
 }
