@@ -195,7 +195,7 @@ ParameterInteger = R6Class("ParameterInteger",
     #' @param default_value (int): The default Python value of the parameter.
     initialize = function(name,
                           default_value=NULL){
-      super$intialize(
+      super$initialize(
         name=name, parameter_type=ParameterTypeEnum$new("INTEGER"), default_value=default_value
       )
     }
