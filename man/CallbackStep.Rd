@@ -60,6 +60,8 @@ Constructs a CallbackStep.
   sqs_queue_url,
   inputs,
   outputs,
+  display_name = NULL,
+  description = NULL,
   cache_config = NULL,
   depends_on = NULL
 )}\if{html}{\out{</div>}}
@@ -76,6 +78,10 @@ Constructs a CallbackStep.
 in the SQS message body of callback messages.}
 
 \item{\code{outputs}}{(List[CallbackOutput]): Outputs that can be provided when completing a callback.}
+
+\item{\code{display_name}}{(str): The display name of the callback step.}
+
+\item{\code{description}}{(str): The description of the callback step.}
 
 \item{\code{cache_config}}{(CacheConfig):  A `CacheConfig` instance.}
 
