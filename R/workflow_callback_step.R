@@ -12,7 +12,7 @@
 #' @title Workflow CallbackOuputTypeEnum class
 #' @description CallbackOutput type enum.
 #' @export
-CallbackOuputTypeEnum = Enum(
+CallbackOutputTypeEnum = Enum(
   String = "String",
   Integer = "Integer",
   Boolean = "Boolean",
@@ -103,6 +103,8 @@ CallbackStep = R6Class("CallbackStep",
     #' @param inputs (dict): Input arguments that will be provided
     #'              in the SQS message body of callback messages.
     #' @param outputs (List[CallbackOutput]): Outputs that can be provided when completing a callback.
+    #' @param display_name (str): The display name of the callback step.
+    #' @param description (str): The description of the callback step.
     #' @param cache_config (CacheConfig):  A `CacheConfig` instance.
     #' @param depends_on (List[str]): A list of step names this `TransformStep`
     #'              depends on
@@ -110,6 +112,8 @@ CallbackStep = R6Class("CallbackStep",
                           sqs_queue_url,
                           inputs,
                           outputs,
+                          display_name=NULL,
+                          description=NULL,
                           cache_config=NULL,
                           depends_on=NULL){
       stopifnot(
@@ -120,7 +124,9 @@ CallbackStep = R6Class("CallbackStep",
         inherits(cache_config, "CacheConfig") || is.null(cache_config),
         is.list(depends_on) || is.null(depends_on)
       )
-      super$initialize(name, StepTypeEnum$CALLBACK, depends_on)
+      super$initialize(
+        name, display_name, description, StepTypeEnum$CALLBACK, depends_on
+      )
       self$sqs_queue_url = sqs_queue_url
       self$outputs = outputs
       self$cache_config = cache_config
@@ -146,7 +152,7 @@ CallbackStep = R6Class("CallbackStep",
         request_dict = modifyList(request_dict, self$cache_config$config)
 
       request_dict[["SqsQueueUrl"]] = self$sqs_queue_url
-      request_dict[["OutputParameters"]] = list(Map(function(op){op$to_request()}, self$outputs))
+      request_dict[["OutputParameters"]] = Map(function(op){op$to_request()}, self$outputs)
       return(request_dict)
     }
   ),
