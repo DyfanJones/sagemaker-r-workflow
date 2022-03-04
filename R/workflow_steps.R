@@ -37,6 +37,14 @@ Step = R6Class("Step",
     #' The name of the step.
     name = NULL,
 
+    #' @field display_name
+    #' The display name of the step.
+    display_name=NULL,
+
+    #' @field description
+    #' The description of the step.
+    description = NULL,
+
     #' @field step_type
     #' The type of the step.
     step_type = NULL,
@@ -75,7 +83,7 @@ Step = R6Class("Step",
         "Type"=self$step_type,
         "Arguments"=self$arguments
       )
-      if (!is.null(self.depends_on))
+      if (!is.null(self$depends_on))
         request_dict[["DependsOn"]] = private$.resolve_depends_on(self$depends_on)
       request_dict[["DisplayName"]] = self$display_name
       request_dict[["Description"]] = self$description
