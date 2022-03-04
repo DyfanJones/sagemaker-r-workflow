@@ -161,6 +161,10 @@ ParameterString = R6Class("ParameterString",
   inherit = Parameter,
   public = list(
 
+    #' @field enum_values
+    #' Placeholder
+    enum_values = NULL,
+
     #' @description Create a pipeline string parameter.
     #' @param name (str): The name of the parameter.
     #' @param default_value (str): The default Python value of the parameter. Defaults to None.
@@ -177,7 +181,7 @@ ParameterString = R6Class("ParameterString",
     #' @description Get the request structure for workflow service calls.
     to_request = function(){
       request_dict = super$to_request()
-      request_dict[["EnumValues"]] = self.enum_values
+      request_dict[["EnumValues"]] = self$enum_values
       return(request_dict)
     }
   )
@@ -195,7 +199,7 @@ ParameterInteger = R6Class("ParameterInteger",
     #' @param default_value (int): The default Python value of the parameter.
     initialize = function(name,
                           default_value=NULL){
-      super$intialize(
+      super$initialize(
         name=name, parameter_type=ParameterTypeEnum$new("INTEGER"), default_value=default_value
       )
     }

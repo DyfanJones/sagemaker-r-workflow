@@ -5,7 +5,7 @@
 \alias{ExecutionVariables}
 \title{Enum-like class for all ExecutionVariable instances.}
 \format{
-An object of class \code{Enum} (inherits from \code{environment}) of length 5.
+An object of class \code{Enum} (inherits from \code{environment}) of length 6.
 }
 \usage{
 ExecutionVariables

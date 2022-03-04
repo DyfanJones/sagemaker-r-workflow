@@ -14,6 +14,10 @@ Pipeline step for workflow.
 \describe{
 \item{\code{name}}{The name of the step.}
 
+\item{\code{display_name}}{The display name of the step.}
+
+\item{\code{description}}{The description of the step.}
+
 \item{\code{step_type}}{The type of the step.}
 
 \item{\code{depends_on}}{The list of step names the current step depends on}

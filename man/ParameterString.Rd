@@ -9,6 +9,13 @@ Pipeline string parameter for workflow.
 \section{Super classes}{
 \code{\link[sagemaker.workflow:Entity]{sagemaker.workflow::Entity}} -> \code{\link[sagemaker.workflow:Parameter]{sagemaker.workflow::Parameter}} -> \code{ParameterString}
 }
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{enum_values}}{Placeholder}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{

@@ -9,10 +9,10 @@
 #' @import R6
 #' @import sagemaker.core
 
-#' @title Workflow PipeLineExperimentConfig class
+#' @title Workflow PipelineExperimentConfig class
 #' @description Experiment config for SageMaker pipeline.
 #' @export
-PipeLineExperimentConfig = R6Class("PipeLineExperimentConfig",
+PipelineExperimentConfig = R6Class("PipelineExperimentConfig",
   inherit = Entity,
   public = list(
 
@@ -23,10 +23,10 @@ PipeLineExperimentConfig = R6Class("PipeLineExperimentConfig",
     #'              the name of the trial that will be created.
     #' @examples
     #' # Use pipeline name as the experiment name and pipeline execution id as the trial name::
-    #' PipeLineExperimentConfig$new(
+    #' PipelineExperimentConfig$new(
     #'      ExecutionVariables$PIPELINE_NAME, ExecutionVariables$PIPELINE_EXECUTION_ID)
     #' # Use a customized experiment name and pipeline execution id as the trial name::
-    #' PipeLineExperimentConfig$new(
+    #' PipelineExperimentConfig$new(
     #'      'MyExperiment', ExecutionVariables$PIPELINE_EXECUTION_ID)
     initialize = function(experiment_name,
                           trial_name){
