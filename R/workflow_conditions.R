@@ -97,9 +97,6 @@ ConditionEquals = R6Class("ConditionEquals",
     #'              variable, parameter, property, or Python primitive value to compare to.
     initialize = function(left,
                           right){
-      stopifnot(
-        inherits(left, "ConditionValueType")
-      )
       super$initialize(ConditionTypeEnum$EQ, left, right)
     }
   )
@@ -119,9 +116,6 @@ ConditionGreaterThan = R6Class("ConditionGreaterThan",
     #'              variable, parameter, property, or Python primitive value to compare to.
     initialize = function(left,
                           right){
-      stopifnot(
-        inherits(left, "ConditionValueType")
-      )
       super$initialize(ConditionTypeEnum$GT, left, right)
 
     }
@@ -162,9 +156,6 @@ ConditionLessThan= R6Class("ConditionLessThan",
     #'              variable, parameter, property, or Python primitive value to compare to.
     initialize = function(left,
                           right){
-      stopifnot(
-        inherits(left, "ConditionValueType")
-      )
       super$initialize(ConditionTypeEnum$LTE, left, right)
     }
   )
@@ -184,9 +175,6 @@ ConditionLessThanOrEqualTo = R6Class("ConditionLessThanOrEqualTo",
     #'              variable, parameter, property, or Python primitive value to compare to.
     initialize = function(left,
                           right){
-      stopifnot(
-        inherits(left, "ConditionValueType")
-      )
       super$initialize(ConditionTypeEnum.LTE, left, right)
     }
   )
@@ -206,9 +194,6 @@ ConditionIn = R6Class("ConditionIn",
     #'              of values to check for membership in.
     initialize = function(value,
                           in_values){
-      stopifnot(
-        inherits(value, "ConditionValueType")
-      )
       super$initialize(ConditionTypeEnum$IN)
       self$value = value
       self$in_values = in_values
@@ -236,9 +221,6 @@ ConditionNot = R6Class("ConditionNot",
     #' @description Construct a `ConditionNot` condition for negating another `Condition`.
     #' @param expression (Condition): A `Condition` to take the negation of.
     initialize = function(expression){
-      stopifnot(
-        inherits(expression, "Condition")
-      )
       super$initialize(ConditionTypeEnum$NOT)
       self$expression = expression
     },
