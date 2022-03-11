@@ -23,7 +23,12 @@ StepTypeEnum = Enum(
   TRAINING = "Training",
   TRANSFORM = "Transform",
   CALLBACK = "Callback",
-  TUNING = "Tuning"
+  TUNING = "Tuning",
+  LAMBDA = "Lambda",
+  QUALITY_CHECK = "QualityCheck",
+  CLARIFY_CHECK = "ClarifyCheck",
+  EMR = "EMR",
+  FAIL = "Fail"
 )
 
 #' @title Workflow Step class
@@ -151,6 +156,14 @@ Step = R6Class("Step",
 CacheConfig = R6Class("CacheConfig",
   public = list(
 
+    #' @field enable_caching
+    #' To enable step caching.
+    enable_caching=NULL,
+
+    #' @field expire_after
+    #' If step caching is enabled, a timeout also needs to defined.
+    expire_after = NULL,
+
     #' @description Initialize Workflow CacheConfig
     #'              If caching is enabled, the pipeline attempts to find a previous execution of a step
     #'              that was called with the same arguments. Step caching only considers successful execution.
@@ -161,8 +174,8 @@ CacheConfig = R6Class("CacheConfig",
     #' @param expire_after (str): If step caching is enabled, a timeout also needs to defined.
     #'              It defines how old a previous execution can be to be considered for reuse.
     #'              Value should be an ISO 8601 duration string. Defaults to `NULL`.
-    inititialize = function(enable_caching=FALSE,
-                            expire_after=NULL){
+    initialize = function(enable_caching=FALSE,
+                          expire_after=NULL){
       self$enable_caching = enable_caching
       self$expire_after = expire_after
     },

@@ -30,6 +30,7 @@ Data Bias Check Config
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="ClarifyCheckConfig" data-id="format">}\href{../../sagemaker.workflow/html/ClarifyCheckConfig.html#method-format}{\code{sagemaker.workflow::ClarifyCheckConfig$format()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -39,7 +40,7 @@ Data Bias Check Config
 \subsection{Method \code{new()}}{
 Initialize DataBiasCheckConfig class
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DataBiasCheckConfig$new(data_bias_config, methods = "all")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DataBiasCheckConfig$new(data_bias_config, methods = "all", ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -60,6 +61,8 @@ Initialize DataBiasCheckConfig class
 }
         Defaults to computing all.
         This field CANNOT be any of PipelineNonPrimitiveInputTypes.}
+
+\item{\code{...}}{: Parameters from ClarifyCheckConfig}
 }
 \if{html}{\out{</div>}}
 }
