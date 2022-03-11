@@ -24,6 +24,7 @@ user code file}
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{ClarifyCheckConfig$new()}}
+\item \href{#method-format}{\code{ClarifyCheckConfig$format()}}
 \item \href{#method-clone}{\code{ClarifyCheckConfig$clone()}}
 }
 }
@@ -55,6 +56,16 @@ It will be generated once uploading the created analysis config file.}
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-format"></a>}}
+\if{latex}{\out{\hypertarget{method-format}{}}}
+\subsection{Method \code{format()}}{
+format class
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ClarifyCheckConfig$format()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

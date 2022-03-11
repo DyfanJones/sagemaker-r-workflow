@@ -32,6 +32,7 @@ Model Explainability Check Config
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="ClarifyCheckConfig" data-id="format">}\href{../../sagemaker.workflow/html/ClarifyCheckConfig.html#method-format}{\code{sagemaker.workflow::ClarifyCheckConfig$format()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -44,7 +45,8 @@ Initialize ModelExplainabilityCheckConfig class
 \if{html}{\out{<div class="r">}}\preformatted{ModelExplainabilityCheckConfig$new(
   model_config,
   explainability_config,
-  model_scores = NULL
+  model_scores = NULL,
+  ...
 )}\if{html}{\out{</div>}}
 }
 
@@ -61,6 +63,8 @@ in the model output for the predicted scores to be explained (default: None).
 This is not required if the model output is a single score. Alternatively,
 an instance of ModelPredictedLabelConfig can be provided
 but this field CANNOT be any of PipelineNonPrimitiveInputTypes.}
+
+\item{\code{...}}{: Parameters from ClarifyCheckConfig}
 }
 \if{html}{\out{</div>}}
 }

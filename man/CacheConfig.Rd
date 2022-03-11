@@ -6,6 +6,15 @@
 \description{
 Configuration class to enable caching in pipeline workflow.
 }
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{enable_caching}}{To enable step caching.}
+
+\item{\code{expire_after}}{If step caching is enabled, a timeout also needs to defined.}
+}
+\if{html}{\out{</div>}}
+}
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
@@ -16,15 +25,15 @@ Configuration class to enable caching in pipeline workflow.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-inititialize}{\code{CacheConfig$inititialize()}}
+\item \href{#method-new}{\code{CacheConfig$new()}}
 \item \href{#method-format}{\code{CacheConfig$format()}}
 \item \href{#method-clone}{\code{CacheConfig$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-inititialize"></a>}}
-\if{latex}{\out{\hypertarget{method-inititialize}{}}}
-\subsection{Method \code{inititialize()}}{
+\if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
+\subsection{Method \code{new()}}{
 Initialize Workflow CacheConfig
              If caching is enabled, the pipeline attempts to find a previous execution of a step
              that was called with the same arguments. Step caching only considers successful execution.
@@ -32,7 +41,7 @@ Initialize Workflow CacheConfig
              from previous execution rather than recomputing the step. When multiple successful executions
              exist within the timeout period, it uses the result for the most recent successful execution.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CacheConfig$inititialize(enable_caching = FALSE, expire_after = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{CacheConfig$new(enable_caching = FALSE, expire_after = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

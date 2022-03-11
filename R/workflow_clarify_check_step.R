@@ -9,6 +9,7 @@
 #' @import sagemaker.mlcore
 #' @importFrom fs path
 #' @importFrom jsonlite write_json
+#' @importFrom stats setNames
 
 .DATA_BIAS_TYPE = "DATA_BIAS"
 .MODEL_BIAS_TYPE = "MODEL_BIAS"
@@ -54,6 +55,11 @@ ClarifyCheckConfig = R6Class("ClarifyCheckConfig",
       self$data_config = data_config
       self$kms_key = kms_key
       self$monitoring_analysis_config_uri = monitoring_analysis_config_uri
+    },
+
+    #' @description format class
+    format = function(){
+      format_class(self)
     }
   )
 )
@@ -87,14 +93,18 @@ DataBiasCheckConfig = R6Class("DataBiasCheckConfig",
     #'     }
     #'             Defaults to computing all.
     #'             This field CANNOT be any of PipelineNonPrimitiveInputTypes.
+    #' @param ... : Parameters from ClarifyCheckConfig
     initialize = function(data_bias_config,
-                          methods="all"){
+                          methods="all",
+                          ...){
       stopifnot(
         inherits(data_bias_config, "BiasConfig"),
         is.character(methods) || is.list(methods)
       )
+
       self$data_bias_config = data_bias_config
       self$methods = methods
+      do.call(super$initialize, list(...))
     }
   )
 )
@@ -108,6 +118,14 @@ ModelBiasCheckConfig = R6Class("ModelBiasCheckConfig",
     #' @field data_bias_config
     #' Config of sensitive groups
     data_bias_config = NULL,
+
+    #' @field model_config
+    #' Config of the model and its endpoint to be created
+    model_config = NULL,
+
+    #' @field model_predicted_label_config
+    #' Config of how to extract the predicted label from the model output
+    model_predicted_label_config = NULL,
 
     #' @field methods
     #' Selector of a subset of potential metrics
@@ -134,10 +152,12 @@ ModelBiasCheckConfig = R6Class("ModelBiasCheckConfig",
     #'     }
     #'             Defaults to computing all.
     #'             This field CANNOT be any of PipelineNonPrimitiveInputTypes.
+    #' @param ... : Parameters from ClarifyCheckConfig
     initialize = function(data_bias_config,
                           model_config,
                           model_predicted_label_config,
-                          methods = "all"){
+                          methods = "all",
+                          ...){
       stopifnot(
         inherits(data_bias_config, "BiasConfig"),
         inherits(model_config, "ModelConfig"),
@@ -148,6 +168,7 @@ ModelBiasCheckConfig = R6Class("ModelBiasCheckConfig",
       self$model_config = model_config
       self$model_predicted_label_config = model_predicted_label_config
       self$methods = methods
+      do.call(super$initialize, list(...))
     }
   )
 )
@@ -179,9 +200,11 @@ ModelExplainabilityCheckConfig = R6Class("ModelExplainabilityCheckConfig",
     #'              This is not required if the model output is a single score. Alternatively,
     #'              an instance of ModelPredictedLabelConfig can be provided
     #'              but this field CANNOT be any of PipelineNonPrimitiveInputTypes.
+    #' @param ... : Parameters from ClarifyCheckConfig
     initialize = function(model_config,
                           explainability_config,
-                          model_scores = NULL){
+                          model_scores = NULL,
+                          ...){
       stopifnot(
         inherits(model_config, "ModelConfig"),
         inherits(explainability_config, "SHAPConfig"),
@@ -195,6 +218,7 @@ ModelExplainabilityCheckConfig = R6Class("ModelExplainabilityCheckConfig",
       self$model_config =  model_config
       self$explainability_config = explainability_config
       self$model_scores = model_scores
+      do.call(super$initialize, list(...))
     }
   )
 )
@@ -202,6 +226,7 @@ ModelExplainabilityCheckConfig = R6Class("ModelExplainabilityCheckConfig",
 #' @title ClarifyCheckStep step for workflow.
 #' @export
 ClarifyCheckStep = R6Class("ClarifyCheckStep",
+  inherit = Step,
   public = list(
 
     #' @description Constructs a ClarifyCheckStep.
@@ -254,17 +279,17 @@ ClarifyCheckStep = R6Class("ClarifyCheckStep",
           "ExecutionVariable/Expression/Parameter/Properties"
         )
       }
-      if (is.null(clarify_check_config$data_config$s3_analysis_config_output_path) &
+      if (empty(clarify_check_config$data_config$s3_analysis_config_output_path) &
           inherits(clarify_check_config$data_config$s3_output_path,
             c("ExecutionVariable", "Expression", "Parameter", "Properties"))
       ){
         RuntimeError$new(
           "`s3_output_path` cannot be of type ExecutionVariable/Expression/Parameter",
-          "/Properties if `s3_analysis_config_output_path` is none or empty "
+          "/Properties if `s3_analysis_config_output_path` is NULL or empty "
         )
       }
       super$initialize(
-        name, display_name, description, StepTypeEnum.CLARIFY_CHECK, depends_on
+        name, display_name, description, StepTypeEnum$CLARIFY_CHECK, depends_on
       )
       self$skip_check = skip_check
       self$register_new_baseline = register_new_baseline
@@ -333,17 +358,19 @@ ClarifyCheckStep = R6Class("ClarifyCheckStep",
     #' @field arguments
     #'        The arguments dict that is used to define the ClarifyCheck step.
     arguments = function(){
-      ll = private$.baselining_processor$.__enclos_env__$private$.normalize_args(
-        inputs=list(private$.processing_params[["config_input"]], private$.processing_params[["data_input"]]),
-        outputs=list(private$.processing_params[["result_output"]])
-      )
-      names(ll) = c("normalized_inputs", "normalized_outputs")
+      ll = setNames(
+        private$.baselining_processor$.__enclos_env__$private$.normalize_args(
+          inputs=list(private$.processing_params[["config_input"]], private$.processing_params[["data_input"]]),
+          outputs=list(private$.processing_params[["result_output"]])
+          ), c("normalized_inputs", "normalized_outputs")
+        )
       process_args = sagemaker.common::ProcessingJob$private_methods$.get_process_args(
         private$.baselining_processor,
         ll$normalized_inputs,
         ll$normalized_outputs,
         experiment_config=list()
       )
+
       request_dict = do.call(
         private$.baselining_processor$sagemaker_session$.__enclos_env__$private$.get_process_request,
         process_args
@@ -376,25 +403,28 @@ ClarifyCheckStep = R6Class("ClarifyCheckStep",
         analysis_config =  modifyList(
           analysis_config, self$clarify_check_config$data_bias_config$get_config()
         )
-        ll = self$clarify_check_config$model_predicted_label_config$get_predictor_config()
-        names(ll) = c("probability_threshold", "predictor_config")
+        ll = setNames(
+          self$clarify_check_config$model_predicted_label_config$get_predictor_config(),
+          c("probability_threshold", "predictor_config")
+        )
         ll$predictor_config = modifyList(
           ll$predictor_config, self$clarify_check_config$model_config$get_predictor_config())
         ll[["predictor_config"]][["model_name"]] = NULL
         analysis_config[["methods"]] = list(
           "post_training_bias"=list("methods"=self$clarify_check_config$methods)
         )
-        analysis_config[["predictor"]] = predictor_config
-        .set(probability_threshold, "probability_threshold", analysis_config)
+        analysis_config[["predictor"]] = ll$predictor_config
+        .set(ll$probability_threshold, "probability_threshold", analysis_config)
       } else {
         predictor_config = self$clarify_check_config$model_config$get_predictor_config()
-        predictor_config[["model_name"]] = NULL.pop("model_name")
+        predictor_config[["model_name"]] = NULL
         model_scores = self$clarify_check_config$model_scores
-        if (isinstance(model_scores, ModelPredictedLabelConfig)){
-           ll = model_scores$get_predictor_config()
-          names(ll) = c("probability_threshold", "predicted_label_config")
-          .set(probability_threshold, "probability_threshold", analysis_config)
-          predictor_config = modifyList(predictor_config, predicted_label_config)
+        if (inherits(model_scores, "ModelPredictedLabelConfig")){
+           ll = setNames(model_scores$get_predictor_config(),
+             c("probability_threshold", "predicted_label_config")
+           )
+          .set(ll$probability_threshold, "probability_threshold", analysis_config)
+          predictor_config = modifyList(ll$predictor_config, ll$predicted_label_config)
         } else {
           .set(model_scores, "label", predictor_config)
         }
@@ -433,7 +463,7 @@ ClarifyCheckStep = R6Class("ClarifyCheckStep",
       config_input = sagemaker.common::ProcessingInput$new(
         input_name="analysis_config",
         source=s3_analysis_config_file,
-        destination=sagemaker.mlcore::SageMakerClarifyProcessor$private_fields$.CLARIFY_CONFIG_INPUT,
+        destination=sagemaker.common::SageMakerClarifyProcessor$private_fields$.CLARIFY_CONFIG_INPUT,
         s3_data_type="S3Prefix",
         s3_input_mode="File",
         s3_compression_type="None"
@@ -441,14 +471,14 @@ ClarifyCheckStep = R6Class("ClarifyCheckStep",
       data_input = sagemaker.common::ProcessingInput$new(
         input_name="dataset",
         source=data_config$s3_data_input_path,
-        destination=sagemaker.mlcore::SageMakerClarifyProcessor$private_fields$.CLARIFY_CONFIG_INPUT,
+        destination=sagemaker.common::SageMakerClarifyProcessor$private_fields$.CLARIFY_DATA_INPUT,
         s3_data_type="S3Prefix",
         s3_input_mode="File",
         s3_data_distribution_type=data_config$s3_data_distribution_type,
         s3_compression_type=data_config$s3_compression_type
       )
       result_output = sagemaker.common::ProcessingOutput$new(
-        source=sagemaker.mlcore::SageMakerClarifyProcessor$private_fields$.CLARIFY_OUTPUT,
+        source=sagemaker.common::SageMakerClarifyProcessor$private_fields$.CLARIFY_OUTPUT,
         destination=data_config$s3_output_path,
         output_name="analysis_result",
         s3_upload_mode="EndOfJob"

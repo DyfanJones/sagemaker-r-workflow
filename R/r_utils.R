@@ -19,6 +19,10 @@ paws_error_code = function(error){
   return(error[["error_response"]][["__type"]] %||% error[["error_response"]][["Code"]])
 }
 
+empty = function(obj){
+  is.null(obj) || !(length(obj) == 0 || nzchar(obj))
+}
+
 # Checks if a list exists with in another list.
 #' @import data.table
 list.exist.in = function(a, b){

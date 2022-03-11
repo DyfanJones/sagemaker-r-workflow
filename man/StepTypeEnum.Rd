@@ -5,7 +5,7 @@
 \alias{StepTypeEnum}
 \title{Workflow StepTypeEnum class}
 \format{
-An object of class \code{Enum} (inherits from \code{environment}) of length 8.
+An object of class \code{Enum} (inherits from \code{environment}) of length 13.
 }
 \usage{
 StepTypeEnum

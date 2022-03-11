@@ -16,6 +16,10 @@ Model Bias Check Config
 \describe{
 \item{\code{data_bias_config}}{Config of sensitive groups}
 
+\item{\code{model_config}}{Config of the model and its endpoint to be created}
+
+\item{\code{model_predicted_label_config}}{Config of how to extract the predicted label from the model output}
+
 \item{\code{methods}}{Selector of a subset of potential metrics}
 }
 \if{html}{\out{</div>}}
@@ -30,6 +34,7 @@ Model Bias Check Config
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="ClarifyCheckConfig" data-id="format">}\href{../../sagemaker.workflow/html/ClarifyCheckConfig.html#method-format}{\code{sagemaker.workflow::ClarifyCheckConfig$format()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -43,7 +48,8 @@ Initialize DataBiasCheckConfig class
   data_bias_config,
   model_config,
   model_predicted_label_config,
-  methods = "all"
+  methods = "all",
+  ...
 )}\if{html}{\out{</div>}}
 }
 
@@ -73,6 +79,8 @@ extract the predicted label from the model output.}
 }
         Defaults to computing all.
         This field CANNOT be any of PipelineNonPrimitiveInputTypes.}
+
+\item{\code{...}}{: Parameters from ClarifyCheckConfig}
 }
 \if{html}{\out{</div>}}
 }

@@ -69,7 +69,7 @@ CheckJobConfig = R6Class("CheckJobConfig",
     #'              "ModelQualityMonitor", "ModelBiasMonitor", "ModelExplainabilityMonitor"
     #' @return sagemaker.model_monitor.ModelMonitor or None if the mm_type is not valid
     .generate_model_monitor = function(mm_type){
-      stopifnot(as.character(mm_type))
+      stopifnot(is.character(mm_type))
 
       if (mm_type == "DefaultModelMonitor") {
         monitor = sagemaker.mlcore::DefaultModelMonitor$new(
