@@ -1,6 +1,8 @@
-# sagemaker.workflow 0.1.2
+# sagemaker.workflow 0.1.2.9000
 ## Bug Fix:
 * Correctly parse clarify check step
+* Correctly parse botocore service files
+* Properties correctly builds components
 
 # sagemaker.workflow 0.1.1
 ## Bug fix: 
