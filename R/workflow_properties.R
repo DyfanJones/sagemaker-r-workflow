@@ -19,7 +19,7 @@ PropertiesMeta = R6Class("PropertiesMeta",
     #' @param ... currently not implemented
     initialize = function(...){
       kwargs = list(...)
-      if(is.null(private$.shapes)){
+      if(is.null(private$.shapes_map)){
         private$.shapes_map = list(
           sagemaker = sagemaker_service,
           emr = emr_service
@@ -77,25 +77,25 @@ Properties = R6Class("Properties",
       shapes = private$.shapes_map[[service_name]] %||% list()
 
       for (name in private$.shape_names){
-        shape = private$.shapes[[name]] %||% list()
-        shape_type = shape[["type"]]
+        shape = shapes[[name]] %||% list()
+        shape_type = shape[["type"]] %||% ""
         if(shape_type %in% private$.primitive_types){
           # self$format = function() name
         } else if (shape_type == "structure") {
           members = shape[["members"]]
           for(key in names(members)){
             info = members[[key]]
-            if (private$.shapes[[info[["shape"]]]][["type"]] == "list"){
+            if (shapes[[info[["shape"]]]][["type"]] == "list"){
               self[[key]] = PropertiesList$new(
                 sprintf("%s.%s", path, key), info[["shape"]], service_name
               )
-            } else if (private$.shapes[[info[["shape"]]]][["type"]] == "map") {
+            } else if (shapes[[info[["shape"]]]][["type"]] == "map") {
               self[[key]] = PropertiesMap$new(
                 sprintf("%s.%s", path, key), info[["shape"]], service_name
               )
-            }else {
+            } else {
               self[[key]] = Properties$new(
-                sprintf("%s.%s", path, key), info[["shape"]], service_name
+                sprintf("%s.%s", path, key), info[["shape"]], service_name=service_name
               )
             }
           }
@@ -143,7 +143,7 @@ PropertiesList = R6Class("PropertiesList",
     #' @param item (Union[int, str]): The index of the item in sequence.
     get_item = function(item){
       if (!(item %in% names(private$.items))){
-        shape = properties_env[[self$sevice_name]][[self$shape_name]]
+        shape = private$.shapes_map[[self$service_name]][[self$shape_name]]
         member = shape[["member"]][["shape"]]
         if (is.character(item)){
           property_item = Properties$new(
@@ -159,7 +159,8 @@ PropertiesList = R6Class("PropertiesList",
   ),
   private = list(
     .items = NULL
-  )
+  ),
+  lock_objects = F
 )
 
 #' @title PropertiesMap class
@@ -198,7 +199,7 @@ PropertiesMap = R6Class("PropertiesMap",
     #' @param item (Union[int, str]): The index of the item in sequence.
     get_item = function(item){
       if (!(item %in% names(private$.items))){
-        shape = properties_env[[self$sevice_name]][[self$shape_name]]
+        shape = private$.shapes_map[[self$service_name]][[self$shape_name]]
         member = shape[["value"]][["shape"]]
         if (is.character(item)){
           property_item = Properties$new(
@@ -209,11 +210,12 @@ PropertiesMap = R6Class("PropertiesMap",
             sprintf("%s['%s']", private$.path, item), member
           )
         }
-        self._items[item] = property_item
+        private$.items[[item]] = property_item
       }
       return(private$.items[[item]])
     }
-  )
+  ),
+  lock_objects=F
 )
 
 #' @title PropertyFile Class
@@ -259,5 +261,6 @@ PropertyFile = R6Class("PropertyFile",
       )
       return(private$.validate_value(obj, "list"))
     }
-  )
+  ),
+  lock_objects=F
 )

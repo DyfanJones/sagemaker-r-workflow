@@ -12,8 +12,8 @@ get-botocore-service:
 	@git submodule update --remote vendor/botocore
 	@mkdir -p $(dest_data)/emr
 	@mkdir -p $(dest_data)/sagemaker
-	@cp -R $(src_botocore_dir)/$(botocore_sagemaker)/service-2.json $(dest_data)/emr
-	@cp -R $(src_botocore_dir)/$(botocore_emr)/service-2.json $(dest_data)/sagemaker
+	@cp -R $(src_botocore_dir)/$(botocore_sagemaker)/service-2.json $(dest_data)/sagemaker
+	@cp -R $(src_botocore_dir)/$(botocore_emr)/service-2.json $(dest_data)/emr
 	@Rscript $(dest_data)/compress_data.R
 
 get-sagemaker-repack:
