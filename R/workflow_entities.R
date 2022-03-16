@@ -7,6 +7,7 @@
 #' @title Base object for workflow entities.
 #' @description Entities must implement the to_request method.
 #' @keywords internal
+#' @export
 Entity = R6Class("Entity",
   public = list(
 
@@ -22,21 +23,10 @@ Entity = R6Class("Entity",
   )
 )
 
-# An EnumMeta which defaults to the first value in the Enum list
-DefaultEnumMeta = R6Class("DefaultEnumMeta",
-  public = list(
-    default = NULL,
-    factory = function(value = self$default){
-      if (identical(value, DefaultEnumMeta$public_fields$default))
-        return(get(class(self)[[1]])$private_fields[[1]])
-      return(get(class(self)[[2]])$private_fields[[1]])
-    }
-  )
-)
-
 #' @title Base object for expressions.
 #' @description Expressions must implement the expr property.
 #' @keywords internal
+#' @export
 Expression = R6Class("Expression",
   public = list(
 
