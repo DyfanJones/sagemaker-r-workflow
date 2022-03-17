@@ -12,7 +12,7 @@ Get JSON properties from PropertyFiles.
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{step}}{The step from which to get the property file.}
+\item{\code{step_name}}{The step from which to get the property file.}
 
 \item{\code{property_file}}{Either a PropertyFile instance or the name of a property file.}
 
@@ -47,13 +47,13 @@ Get JSON properties from PropertyFiles.
 \subsection{Method \code{new()}}{
 Initialize JsonGet class
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{JsonGet$new(step, property_file, json_path)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{JsonGet$new(step_name, property_file, json_path)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{step}}{(Step): The step from which to get the property file.}
+\item{\code{step_name}}{(Step): The step from which to get the property file.}
 
 \item{\code{property_file}}{(Union[PropertyFile, str]): Either a PropertyFile instance
 or the name of a property file.}

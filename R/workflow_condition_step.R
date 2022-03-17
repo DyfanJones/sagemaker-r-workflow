@@ -102,9 +102,9 @@ JsonGet = R6Class("JsonGet",
   inherit = Expression,
   public = list(
 
-    #' @field step
+    #' @field step_name
     #' The step from which to get the property file.
-    step = NULL,
+    step_name = NULL,
 
     #' @field property_file
     #' Either a PropertyFile instance or the name of a property file.
@@ -115,14 +115,14 @@ JsonGet = R6Class("JsonGet",
     json_path = NULL,
 
     #' @description Initialize JsonGet class
-    #' @param step (Step): The step from which to get the property file.
+    #' @param step_name (Step): The step from which to get the property file.
     #' @param property_file (Union[PropertyFile, str]): Either a PropertyFile instance
     #'              or the name of a property file.
     #' @param json_path (str): The JSON path expression to the requested value.
-    initialize = function(step,
+    initialize = function(step_name,
                           property_file,
                           json_path){
-      self$step = step
+      self$step_name = step_name
       self$property_file = property_file
       self$json_path = json_path
     }
@@ -132,20 +132,22 @@ JsonGet = R6Class("JsonGet",
     #' @field expr
     #' The expression dict for a `JsonGet` function.
     expr = function(){
-      if (!is.character(self$step_name))
-        ValueError$new("Please give step name as a string")
-
+      if(!is.character(self$step_name) || !nzchar(self$step_name)){
+        ValueError$new(
+          "Please give a valid step name as a string"
+        )
+      }
       if (inherits(self$property_file, "PropertyFile")){
-        name = self$property_file.name
+        name = self$property_file$name
       } else {
           name = self$property_file
       }
       return(list(
         "Std:JsonGet"=list(
-          "PropertyFile"=list("Get"=sprintf("Steps.%s.PropertyFiles.%s",self$step$name, name)),
+          "PropertyFile"=list("Get"=sprintf("Steps.%s.PropertyFiles.%s",self$step_name, name)),
           "Path"=self$json_path)
-          )
         )
+      )
     }
   )
 )
