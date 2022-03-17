@@ -1,4 +1,4 @@
-# NOTE=This code has been modified from AWS Sagemaker Python:
+# NOTE: This code has been modified from AWS Sagemaker Python:
 # https://github.com/aws/sagemaker-python-sdk/blob/dev/tests/unit/sagemaker/workflow/test_emr_step.py
 
 library(sagemaker.core)

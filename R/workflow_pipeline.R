@@ -41,14 +41,14 @@ Pipeline = R6Class("Pipeline",
     #'              pipeline. Of particular note, the workflow service rejects any pipeline definitions that
     #'              specify a step in the list of steps of a pipeline and that step in the `if_steps` or
     #'              `else_steps` of any `ConditionStep`.
-    #' @param sagemaker_session (sagemaker.session.Session): Session object that manages interactions
+    #' @param sagemaker_session (Session): Session object that manages interactions
     #'              with Amazon SageMaker APIs and any other AWS services needed. If not specified, the
     #'              pipeline creates one using the default AWS configuration chain.
     initialize = function(name,
                           parameters,
                           pipeline_experiment_config,
-                          steps,
-                          sagemaker_session){
+                          steps=NULL,
+                          sagemaker_session=NULL){
       self$name = name
       self$parameters = parameters
       self$pipeline_experiment_config = (
@@ -59,8 +59,8 @@ Pipeline = R6Class("Pipeline",
             ExecutionVariables$PIPELINE_NAME, ExecutionVariables$PIPELINE_EXECUTION_ID
           )
       )
-      self$steps = steps
-      self$sagemaker_session = sagemaker_session
+      self$steps = steps %||% list()
+      self$sagemaker_session = sagemaker_session %||% Session$new()
     },
 
     #' @description Gets the request structure for workflow service calls.
