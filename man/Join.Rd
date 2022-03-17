@@ -45,7 +45,7 @@ Join together properties.
 \subsection{Method \code{new()}}{
 Initialize Join Class
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Join$new(on, values = "")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Join$new(on = "", values = "")}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

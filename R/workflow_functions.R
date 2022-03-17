@@ -24,7 +24,7 @@ Join = R6Class("Join",
     #' @param on (str): The string to join the values on (Defaults to "").
     #' @param values (List[Union[PrimitiveType, Parameter]]): The primitive types
     #'              and parameters to join.
-    initialize = function(on,
+    initialize = function(on="",
                           values=""){
       self$on = on
       self$values = values
