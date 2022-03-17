@@ -102,7 +102,7 @@ LambdaStep = R6Class("LambdaStep",
                           depends_on=NULL){
       stopifnot(
         is.character(name),
-        is.character(lambda_func),
+        inherits(lambda_func, "Lambda"),
         is.null(display_name) || is.character(display_name),
         is.null(description) || is.character(description),
         is.null(inputs) || is.list(inputs),
@@ -141,7 +141,7 @@ LambdaStep = R6Class("LambdaStep",
       function_arn = private$.get_function_arn()
       request_dict[["FunctionArn"]] = function_arn
 
-      request_dict[["OutputParameters"]] = list(Map(function(op){op$to_request()}, self$outputs))
+      request_dict[["OutputParameters"]] = Map(function(op){op$to_request()}, self$outputs)
 
       return(request_dict)
     }
@@ -166,21 +166,22 @@ LambdaStep = R6Class("LambdaStep",
     # Method creates a lambda function and returns it's arn.
     # If the lambda is already present, it will build it's arn and return that.
     .get_function_arn = function(){
-      account_id = self$lambda_func$session$account_id()
       region = self$lambda_func$session$paws_region_name
-      if (tolower(region) == "cn-north-1" || tolower(region) == "cn-northwest-1")
+      if (tolower(region) == "cn-north-1" || tolower(region) == "cn-northwest-1"){
         partition = "aws-cn"
-      else
+      } else {
         partition = "aws"
-
-      if (is.null(self$lambda_func$function_arn)){
+      }
+      if (is.null(self$lambda_func$function_arn)) {
+        account_id = self$lambda_func$session$account_id()
         tryCatch({
           response = self$lambda_func$create()
           return(response[["FunctionArn"]])
-        }, error = function(e){
-          if(grepl("ResourceConflictException", e$message))
+        }, ValueError = function(e){
+          if(!grepl("ResourceConflictException", e$message)) {
             ValueError$new(e$message)
-          return(list(
+          }
+          return (paste0(
             sprintf("arn:%s:lambda:%s:%s:", partition, region, account_id),
             sprintf("function:%s", self$lambda_func$function_name)
           ))
