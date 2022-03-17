@@ -41,8 +41,8 @@ Initialize Pipeline Class
   name,
   parameters,
   pipeline_experiment_config,
-  steps,
-  sagemaker_session
+  steps = NULL,
+  sagemaker_session = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -67,7 +67,7 @@ pipeline. Of particular note, the workflow service rejects any pipeline definiti
 specify a step in the list of steps of a pipeline and that step in the `if_steps` or
 `else_steps` of any `ConditionStep`.}
 
-\item{\code{sagemaker_session}}{(sagemaker.session.Session): Session object that manages interactions
+\item{\code{sagemaker_session}}{(Session): Session object that manages interactions
 with Amazon SageMaker APIs and any other AWS services needed. If not specified, the
 pipeline creates one using the default AWS configuration chain.}
 }
