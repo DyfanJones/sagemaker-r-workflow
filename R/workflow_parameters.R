@@ -12,7 +12,7 @@ ParameterTypeEnum = R6Class("ParameterTypeEnum",
 
     value = NULL,
 
-    initialize = function(value = c("STRING","INTEGER", "BOOLEAN", "BOOLEAN")){
+    initialize = function(value = c("STRING","INTEGER", "BOOLEAN", "FLOAT")){
       self$value = private[[match.arg(value)]]
     }
   ),
