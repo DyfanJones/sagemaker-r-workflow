@@ -52,6 +52,7 @@ Collate:
     'workflow_conditions.R'
     'workflow_condition_step.R'
     'workflow_emr_step.R'
+    'workflow_fail_step.R'
     'workflow_lambda_step.R'
     'workflow_parallelism_config.R'
     'workflow_pipeline_experiment_config.R'
