@@ -6,6 +6,32 @@ library(sagemaker.common)
 library(sagemaker.mlcore)
 library(sagemaker.mlframework)
 
+sagemaker_session = function(region="us-west-2"){
+  paws_mock = Mock$new(
+    name = "PawsSession",
+    region_name = region
+  )
+
+  sms = Mock$new(
+    name="Session",
+    paws_session=paws_mock,
+    paws_region_name=region,
+    config=NULL,
+    local_mode=FALSE,
+    s3=NULL
+  )
+
+  sagemaker = Mock$new()
+  s3_client = Mock$new()
+
+  sms$.call_args("default_bucket", return_value="dummy")
+  sms$.__enclos_env__$private$.default_bucket = "dummy"
+
+  sms$sagemaker = sagemaker
+  sms$s3 = s3_client
+  return(sms)
+}
+
 test_that("test_execution_variable", {
   expect_equal(ExecutionVariables$START_DATETIME$expr, list("Get"="Execution.StartDateTime"))
 })
@@ -57,7 +83,8 @@ test_that("test_fail_step_with_join_fn_in_error_message", {
   pipeline = Pipeline$new(
     name="MyPipeline",
     steps=list(step_cond, step_fail),
-    parameters=list(param)
+    parameters=list(param),
+    sagemaker_session = sagemaker_session()
   )
   .expected_dsl = list(
     list(
