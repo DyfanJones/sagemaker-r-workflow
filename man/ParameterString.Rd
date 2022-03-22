@@ -16,6 +16,13 @@ Pipeline string parameter for workflow.
 }
 \if{html}{\out{</div>}}
 }
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{str}}{Return default value or implicit value}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -45,7 +52,7 @@ Create a pipeline string parameter.
 \describe{
 \item{\code{name}}{(str): The name of the parameter.}
 
-\item{\code{default_value}}{(str): The default Python value of the parameter. Defaults to None.}
+\item{\code{default_value}}{(str): The default Python value of the parameter.}
 
 \item{\code{enum_values}}{(list): placeholder}
 }
