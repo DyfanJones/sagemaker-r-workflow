@@ -66,7 +66,7 @@ test_that("test_fail_step_with_no_error_message", {
 })
 
 test_that("test_fail_step_with_join_fn_in_error_message", {
-  param = ParameterInteger$new(name="MyInt", default_value=2)
+  param = ParameterInteger$new(name="MyInt", default_value=2L)
   cond = ConditionEquals$new(left=param, right=1)
   step_cond = ConditionStep$new(
     name="CondStep",
