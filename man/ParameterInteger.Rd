@@ -9,6 +9,13 @@ Pipeline integer parameter for workflow.
 \section{Super classes}{
 \code{\link[sagemaker.workflow:Entity]{sagemaker.workflow::Entity}} -> \code{\link[sagemaker.workflow:Parameter]{sagemaker.workflow::Parameter}} -> \code{ParameterInteger}
 }
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{int}}{Return default value or implicit value}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{

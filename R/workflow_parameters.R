@@ -64,6 +64,7 @@ Parameter = R6Class("Parameter",
       self$name = name
       self$parameter_type = parameter_type
       self$default_value = default_value
+      private$.check_default_value_type(self$default_value, self$parameter_type$python_type)
     },
 
     #' @description Get the request structure for workflow service calls.
@@ -86,40 +87,11 @@ Parameter = R6Class("Parameter",
   ),
   private = list(
 
-    # Check whether the default value is compatible with the parameter type.
-    # Args:
-    #   _: unused argument required by attrs validator decorator.
-    # value: The value to check the type for.
-    # Raises:
-    #   `TypeError` if the value is not compatible with the instance's Python type.
-    .check_default_value = function(value){
-      private$.check_default_value_type(value, self$parameter_type$python_type)
-    },
-
     # An internal classmethod for the 'Get' expression dict for a `Parameter`.
     # Args:
     #   name (str): The name of the parameter.
     .expr = function(name){
       return(list("Get"=sprintf("Parameters.%s", name)))
-    },
-
-    # Determine the implicit value from the arguments.
-    # The implicit value of the instance should be the default_value if present.
-    # Args:
-    #   value: The default implicit value.
-    # python_type: The Python type the implicit value should be.
-    # args: The list of positional arguments.
-    # kwargs: The dict of keyword arguments.
-    # Returns:
-    #   The implicit value that should be used.
-    .implicit_value = function(value, python_type, args, kwargs){
-      if (length(args) == 2)
-        value = args[[2]] %||% value
-      else if (!islistempty(kwargs))
-          value = kwargs[["default_value"]] %||% value
-      private$.check_default_value_type(value, python_type)
-
-      return(value)
     },
 
     # Check whether the default value is compatible with the parameter type.
@@ -129,7 +101,7 @@ Parameter = R6Class("Parameter",
     # Raises:
     #   `TypeError` if the value is not compatible with the instance's Python type.
     .check_default_value_type = function(value, python_type){
-      if (!is.null(value) && !inherit(value, python_type))
+      if (!is.null(value) && !inherits(value, python_type))
         TypeError$new("The default value specified does not match the Parameter Python type.")
     }
   )
@@ -147,8 +119,8 @@ ParameterBoolean = R6Class("ParameterBoolean",
     #' @param default_value (str): The default Python value of the parameter. Defaults to None.
     initialize = function(name,
                           default_value = NULL){
-      super$intialize(
-        name=name, parameter_type=ParameterTypeEnum$new("Boolean"), default_value=default_value
+      super$initialize(
+        name=name, parameter_type=ParameterTypeEnum$new("BOOLEAN"), default_value=default_value
       )
     }
   )
@@ -167,7 +139,7 @@ ParameterString = R6Class("ParameterString",
 
     #' @description Create a pipeline string parameter.
     #' @param name (str): The name of the parameter.
-    #' @param default_value (str): The default Python value of the parameter. Defaults to None.
+    #' @param default_value (str): The default Python value of the parameter.
     #' @param enum_values (list): placeholder
     initialize =function(name,
                          default_value=NULL,
@@ -183,6 +155,14 @@ ParameterString = R6Class("ParameterString",
       request_dict = super$to_request()
       request_dict[["EnumValues"]] = self$enum_values
       return(request_dict)
+    }
+  ),
+  active = list(
+
+    #' @field str
+    #' Return default value or implicit value
+    str = function(){
+      return(self$default_value %||% character(1))
     }
   )
 )
@@ -203,6 +183,14 @@ ParameterInteger = R6Class("ParameterInteger",
         name=name, parameter_type=ParameterTypeEnum$new("INTEGER"), default_value=default_value
       )
     }
+  ),
+  active = list(
+
+    #' @field int
+    #' Return default value or implicit value
+    int = function(){
+      return(self$default_value %||% 0L)
+    }
   )
 )
 
@@ -221,6 +209,14 @@ ParameterFloat = R6Class("ParameterFloat",
       super$initialize(
         name=name, parameter_type=ParameterTypeEnum$new("FLOAT"), default_value=default_value
       )
+    }
+  ),
+  active = list(
+
+    #' @field float
+    #' Return default value or implicit value
+    float = function(){
+      return(self$default_value %||% 0)
     }
   )
 )
