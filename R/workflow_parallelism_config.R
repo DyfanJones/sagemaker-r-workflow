@@ -10,6 +10,10 @@
 ParallelismConfiguration = R6Class("ParallelismConfiguration",
   public = list(
 
+    #' @field max_parallel_execution_steps
+    #' Max number of steps which could be parallelized
+    max_parallel_execution_steps = NULL,
+
     #' @description Create a ParallelismConfiguration
     #' @param max_parallel_execution_steps, int:
     #'              max number of steps which could be parallelized

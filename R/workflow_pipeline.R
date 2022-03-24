@@ -45,21 +45,16 @@ Pipeline = R6Class("Pipeline",
     #'              with Amazon SageMaker APIs and any other AWS services needed. If not specified, the
     #'              pipeline creates one using the default AWS configuration chain.
     initialize = function(name,
-                          parameters,
-                          pipeline_experiment_config,
-                          steps=NULL,
+                          parameters=list(),
+                          pipeline_experiment_config=PipelineExperimentConfig$new(
+                            ExecutionVariables$PIPELINE_NAME, ExecutionVariables$PIPELINE_EXECUTION_ID
+                          ),
+                          steps=list(),
                           sagemaker_session=NULL){
       self$name = name
       self$parameters = parameters
-      self$pipeline_experiment_config = (
-        if(!missing(pipeline_experiment_config))
-          pipeline_experiment_config
-        else
-          PipelineExperimentConfig$new(
-            ExecutionVariables$PIPELINE_NAME, ExecutionVariables$PIPELINE_EXECUTION_ID
-          )
-      )
-      self$steps = steps %||% list()
+      self$pipeline_experiment_config = pipeline_experiment_config
+      self$steps = steps
       self$sagemaker_session = sagemaker_session %||% Session$new()
     },
 
@@ -135,8 +130,8 @@ Pipeline = R6Class("Pipeline",
                       description=NULL,
                       tags=NULL,
                       parallelism_config=NULL){
-      tryCatch({
-        response = self$create(role_arn, description, tags, parallelism_config)
+      response = tryCatch({
+        self$create(role_arn, description, tags, parallelism_config)
       }, error = function(e){
         error_code = paws_error_code(e)
         if(error_code == "ValidationException"
@@ -146,7 +141,6 @@ Pipeline = R6Class("Pipeline",
             old_tags = self$sagemaker_session$sagemaker$list_tags(
               ResourceArn=response[["PipelineArn"]]
             )[["Tags"]]
-
             tag_keys = lapply(tags, function(tag) tag[["Key"]])
             for (old_tag in old_tags){
               if (!(old_tag[["Key"]] %in% names(tag_keys)))
@@ -156,6 +150,7 @@ Pipeline = R6Class("Pipeline",
               ResourceArn=response[["PipelineArn"]], Tags=tags
             )
           }
+          return(response)
         } else {
           stop(e)
         }
@@ -382,11 +377,11 @@ update_args = function(args, ...){
   assign(args_name, args, envir = parent.frame())
 }
 
-#' @title Workflow .PipeLineExecution class
+#' @title Workflow .PipelineExecution class
 #' @description Internal class for encapsulating pipeline execution instances.
 #' @keywords internal
 #' @export
-.PipeLineExecution = R6Class(".PipeLineExecution",
+.PipelineExecution = R6Class(".PipelineExecution",
   public = list(
 
     #' @field arn

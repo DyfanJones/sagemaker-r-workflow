@@ -39,9 +39,11 @@ Initialize Pipeline Class
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Pipeline$new(
   name,
-  parameters,
-  pipeline_experiment_config,
-  steps = NULL,
+  parameters = list(),
+ 
+    pipeline_experiment_config = PipelineExperimentConfig$new(ExecutionVariables$PIPELINE_NAME,
+    ExecutionVariables$PIPELINE_EXECUTION_ID),
+  steps = list(),
   sagemaker_session = NULL
 )}\if{html}{\out{</div>}}
 }
