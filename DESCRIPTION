@@ -36,10 +36,10 @@ RoxygenNote: 7.1.2
 Collate: 
     'r_utils.R'
     'workflow_utilities.R'
+    'workflow_functions.R'
     'workflow_entities.R'
     'workflow_retry.R'
     'workflow_properties.R'
-    'workflow_functions.R'
     'workflow_steps.R'
     'workflow__utils.R'
     'workflow_airflow.R'

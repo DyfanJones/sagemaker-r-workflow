@@ -43,7 +43,7 @@ PropertiesMeta = R6Class("PropertiesMeta",
 #' @description Properties for use in workflow expressions.
 #' @export
 Properties = R6Class("Properties",
-  inherit = PropertiesMeta,
+  inherit = PipelineVariable,
   public = list(
 
     #' @field shape_name
@@ -147,10 +147,10 @@ PropertiesList = R6Class("PropertiesList",
         member = shape[["member"]][["shape"]]
         if (is.character(item)){
           property_item = Properties$new(
-            sprintf("%s[%s]", private$.path, item), member)
+            sprintf("%s['%s']", private$.path, item), member)
         } else {
           property_item = Properties$new(
-            sprintf("%s[%s]", private$.path, item), member)
+            sprintf("%s[%s]", private$.path, (item - 1)), member)
         }
         private$.items[[item]] = property_item
       }

@@ -7,7 +7,7 @@
 PropertiesList for use in workflow expressions
 }
 \section{Super classes}{
-\code{\link[sagemaker.workflow:PropertiesMeta]{sagemaker.workflow::PropertiesMeta}} -> \code{\link[sagemaker.workflow:Properties]{sagemaker.workflow::Properties}} -> \code{PropertiesList}
+\code{\link[sagemaker.workflow:PropertiesMeta]{sagemaker.workflow::PropertiesMeta}} -> \code{\link[sagemaker.workflow:PipelineVariable]{sagemaker.workflow::PipelineVariable}} -> \code{\link[sagemaker.workflow:Properties]{sagemaker.workflow::Properties}} -> \code{PropertiesList}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -21,6 +21,9 @@ PropertiesList for use in workflow expressions
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
 \item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="PropertiesMeta" data-id="format">}\href{../../sagemaker.workflow/html/PropertiesMeta.html#method-format}{\code{sagemaker.workflow::PropertiesMeta$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="PipelineVariable" data-id="endswith">}\href{../../sagemaker.workflow/html/PipelineVariable.html#method-endswith}{\code{sagemaker.workflow::PipelineVariable$endswith()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="PipelineVariable" data-id="startswith">}\href{../../sagemaker.workflow/html/PipelineVariable.html#method-startswith}{\code{sagemaker.workflow::PipelineVariable$startswith()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.workflow" data-topic="PipelineVariable" data-id="to_string">}\href{../../sagemaker.workflow/html/PipelineVariable.html#method-to_string}{\code{sagemaker.workflow::PipelineVariable$to_string()}}\out{</span>}
 }
 \out{</details>}
 }
