@@ -4,6 +4,8 @@
 #' @import R6
 #' @import sagemaker.core
 
+#' @include workflow_functions.R
+
 #' @title Base object for workflow entities.
 #' @description Entities must implement the to_request method.
 #' @keywords internal
@@ -52,6 +54,50 @@ Expression = R6Class("Expression",
                   paste(dQuote(classes), collapse = " or "))
         )
       }
+    }
+  )
+)
+
+#' @title Base object for pipeline variables
+#' @description PipelineVariables must implement the expr property.
+#' @keywords Internal
+#' @export
+PipelineVariable = R6Class("PipelineVariable",
+  inherit = PropertiesMeta,
+  public = list(
+
+    #' @description Prompt the pipeline to convert the pipeline variable to String in runtime
+    to_string = function(){
+      return(Join$new(on="", values=list(self)))
+    },
+
+    #' @description Simulate the Python string's built-in method: startswith
+    #' @param prefix (str, tuple): The (tuple of) string to be checked.
+    #' @param start (int): To set the start index of the matching boundary (default: None).
+    #' @param end (int): To set the end index of the matching boundary (default: None).
+    #' @return bool: Always return False as Pipeline variables are parsed during execution runtime
+    startswith = function(prefix,
+                          start=NULL,
+                          end=NULL){
+      return(FALSE)
+    },
+
+    #' @description Simulate the Python string's built-in method: endswith
+    #' @param suffix (str, tuple): The (tuple of) string to be checked.
+    #' @param start (int): To set the start index of the matching boundary (default: None).
+    #' @param end (int): To set the end index of the matching boundary (default: None).
+    #' @return bool: Always return False as Pipeline variables are parsed during execution runtime
+    endswith = function(suffix,
+                        start=NULL,
+                        end=NULL){
+      return(FALSE)
+    }
+  ),
+  active = list(
+    #' @field expr
+    #'Get the expression structure for workflow service calls.
+    expr = function(){
+      invisible()
     }
   )
 )
