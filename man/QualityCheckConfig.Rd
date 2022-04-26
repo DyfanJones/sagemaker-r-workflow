@@ -9,7 +9,7 @@ Quality Check Config.
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{baseline_dataset}}{str or PipelineNonPrimitiveInputTypes): The path to the
+\item{\code{baseline_dataset}}{(str or PipelineNonPrimitiveInputTypes): The path to the
 baseline_dataset file. This can be a local path or an S3 uri string}
 
 \item{\code{dataset_format}}{(dict): The format of the baseline_dataset.}
@@ -28,7 +28,42 @@ but CANNOT be any of PipelineNonPrimitiveInputTypes.}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
+\item \href{#method-new}{\code{QualityCheckConfig$new()}}
 \item \href{#method-clone}{\code{QualityCheckConfig$clone()}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
+\subsection{Method \code{new()}}{
+Initialize QualityCheckConfig class
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{QualityCheckConfig$new(
+  baseline_dataset,
+  dataset_format,
+  output_s3_uri = NULL,
+  post_analytics_processor_script = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{baseline_dataset}}{(str or PipelineNonPrimitiveInputTypes): The path to the
+baseline_dataset file. This can be a local path or an S3 uri string}
+
+\item{\code{dataset_format}}{(dict): The format of the baseline_dataset.}
+
+\item{\code{output_s3_uri}}{(str or PipelineNonPrimitiveInputTypes): Desired S3 destination of
+the constraint_violations and statistics json files (default: None).
+If not specified an auto generated path will be used:
+"s3://<default_session_bucket>/model-monitor/baselining/<job_name>/results"}
+
+\item{\code{post_analytics_processor_script}}{str): The path to the record post-analytics
+processor script (default: None). This can be a local path or an S3 uri string
+but CANNOT be any of PipelineNonPrimitiveInputTypes.}
+}
+\if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}

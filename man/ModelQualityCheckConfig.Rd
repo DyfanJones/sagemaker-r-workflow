@@ -33,6 +33,7 @@ convert probabilities to binaries (default: None).}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
+\item \href{#method-new}{\code{ModelQualityCheckConfig$new()}}
 \item \href{#method-clone}{\code{ModelQualityCheckConfig$clone()}}
 }
 }
@@ -41,6 +42,45 @@ convert probabilities to binaries (default: None).}
 \itemize{
 }
 \out{</details>}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
+\subsection{Method \code{new()}}{
+Initialize DataQualityCheckConfig class
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ModelQualityCheckConfig$new(
+  problem_type,
+  inference_attribute = NULL,
+  probability_attribute = NULL,
+  ground_truth_attribute = NULL,
+  probability_threshold_attribute = NULL,
+  ...
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{problem_type}}{(str or PipelineNonPrimitiveInputTypes): The type of problem of this model
+quality monitoring. Valid values are "Regression", "BinaryClassification", "MulticlassClassification".}
+
+\item{\code{inference_attribute}}{(str or PipelineNonPrimitiveInputTypes): Index or JSONpath to
+locate predicted label(s) (default: None).}
+
+\item{\code{probability_attribute}}{(str or PipelineNonPrimitiveInputTypes): Index or JSONpath to
+locate probabilities (default: None).}
+
+\item{\code{ground_truth_attribute}}{(str or PipelineNonPrimitiveInputTypes: Index or JSONpath to
+locate actual label(s) (default: None).}
+
+\item{\code{probability_threshold_attribute}}{(str or PipelineNonPrimitiveInputTypes): Threshold to
+convert probabilities to binaries (default: None).}
+
+\item{\code{...}}{: parameter passed to QualityCheckConfig class.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

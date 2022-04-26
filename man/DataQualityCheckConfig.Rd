@@ -22,6 +22,7 @@ but CANNOT be any of PipelineNonPrimitiveInputTypes.}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
+\item \href{#method-new}{\code{DataQualityCheckConfig$new()}}
 \item \href{#method-clone}{\code{DataQualityCheckConfig$clone()}}
 }
 }
@@ -30,6 +31,27 @@ but CANNOT be any of PipelineNonPrimitiveInputTypes.}
 \itemize{
 }
 \out{</details>}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
+\subsection{Method \code{new()}}{
+Initialize DataQualityCheckConfig class
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DataQualityCheckConfig$new(record_preprocessor_script = NULL, ...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{record_preprocessor_script}}{(str): The path to the record preprocessor script
+(default: None). This can be a local path or an S3 uri string
+but CANNOT be any of PipelineNonPrimitiveInputTypes.}
+
+\item{\code{...}}{: parameter passed to QualityCheckConfig class.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
