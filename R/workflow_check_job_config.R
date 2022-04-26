@@ -144,7 +144,7 @@ CheckJobConfig = R6Class("CheckJobConfig",
 
     #' @description Format class
     format = function(){
-      format_cls(self)
+      format_class(self)
     }
   ),
   lock_objects = F
