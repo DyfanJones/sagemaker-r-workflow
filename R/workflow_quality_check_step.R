@@ -34,7 +34,7 @@ QualityCheckConfig = R6Class("QualityCheckConfig",
   public = list(
 
     #' @field baseline_dataset
-    #' str or PipelineNonPrimitiveInputTypes): The path to the
+    #' (str or PipelineNonPrimitiveInputTypes): The path to the
     #' baseline_dataset file. This can be a local path or an S3 uri string
     baseline_dataset = NULL,
 
@@ -53,7 +53,28 @@ QualityCheckConfig = R6Class("QualityCheckConfig",
     #' (str): The path to the record post-analytics
     #' processor script (default: None). This can be a local path or an S3 uri string
     #' but CANNOT be any of PipelineNonPrimitiveInputTypes.
-    post_analytics_processor_script=NULL
+    post_analytics_processor_script=NULL,
+
+    #' @description Initialize QualityCheckConfig class
+    #' @param baseline_dataset (str or PipelineNonPrimitiveInputTypes): The path to the
+    #'              baseline_dataset file. This can be a local path or an S3 uri string
+    #' @param dataset_format (dict): The format of the baseline_dataset.
+    #' @param output_s3_uri (str or PipelineNonPrimitiveInputTypes): Desired S3 destination of
+    #'              the constraint_violations and statistics json files (default: None).
+    #'              If not specified an auto generated path will be used:
+    #'              "s3://<default_session_bucket>/model-monitor/baselining/<job_name>/results"
+    #' @param post_analytics_processor_script str): The path to the record post-analytics
+    #'              processor script (default: None). This can be a local path or an S3 uri string
+    #'              but CANNOT be any of PipelineNonPrimitiveInputTypes.
+    initialize = function(baseline_dataset,
+                          dataset_format,
+                          output_s3_uri=NULL,
+                          post_analytics_processor_script=NULL){
+      self$baseline_dataset = baseline_dataset
+      self$dataset_format = dataset_format
+      self$output_s3_uri = output_s3_uri
+      self$post_analytics_processor_script = post_analytics_processor_script
+    }
   )
 )
 
@@ -69,7 +90,18 @@ DataQualityCheckConfig = R6Class("DataQualityCheckConfig",
     #' (default: None).
     #' This can be a local path or an S3 uri string
     #' but CANNOT be any of PipelineNonPrimitiveInputTypes.
-    record_preprocessor_script=NULL
+    record_preprocessor_script=NULL,
+
+    #' @description Initialize DataQualityCheckConfig class
+    #' @param record_preprocessor_script (str): The path to the record preprocessor script
+    #'              (default: None). This can be a local path or an S3 uri string
+    #'              but CANNOT be any of PipelineNonPrimitiveInputTypes.
+    #' @param ... : parameter passed to QualityCheckConfig class.
+    initialize = function(record_preprocessor_script=NULL,
+                          ...){
+      self$record_preprocessor_script = record_preprocessor_script
+      super$initialize(...)
+    }
   )
 )
 
@@ -104,7 +136,33 @@ ModelQualityCheckConfig = R6Class("ModelQualityCheckConfig",
     #' @field probability_threshold_attribute
     #' (str or PipelineNonPrimitiveInputTypes): Threshold to
     #' convert probabilities to binaries (default: None).
-    probability_threshold_attribute = NULL
+    probability_threshold_attribute = NULL,
+
+    #' @description Initialize DataQualityCheckConfig class
+    #' @param problem_type (str or PipelineNonPrimitiveInputTypes): The type of problem of this model
+    #'              quality monitoring. Valid values are "Regression", "BinaryClassification", "MulticlassClassification".
+    #' @param inference_attribute (str or PipelineNonPrimitiveInputTypes): Index or JSONpath to
+    #'              locate predicted label(s) (default: None).
+    #' @param probability_attribute (str or PipelineNonPrimitiveInputTypes): Index or JSONpath to
+    #'              locate probabilities (default: None).
+    #' @param ground_truth_attribute (str or PipelineNonPrimitiveInputTypes: Index or JSONpath to
+    #'              locate actual label(s) (default: None).
+    #' @param probability_threshold_attribute (str or PipelineNonPrimitiveInputTypes): Threshold to
+    #'              convert probabilities to binaries (default: None).
+    #' @param ... : parameter passed to QualityCheckConfig class.
+    initialize = function(problem_type,
+                          inference_attribute=NULL,
+                          probability_attribute=NULL,
+                          ground_truth_attribute=NULL,
+                          probability_threshold_attribute=NULL,
+                          ...){
+      self$problem_type = problem_type
+      self$inference_attribute = inference_attribute
+      self$probability_attribute = probability_attribute
+      self$ground_truth_attribute = ground_truth_attribute
+      self$probability_threshold_attribute = probability_threshold_attribute
+      super$initialize(...)
+    }
   )
 )
 
@@ -154,10 +212,10 @@ QualityCheckStep = R6Class("QualityCheckStep",
         is.character(name),
         inherits(quality_check_config, "QualityCheckConfig"),
         inherits(check_job_config, "CheckJobConfig"),
-        is.logical(skip_check),
-        is.logical(register_new_baseline),
-        is.null(model_package_group_name) || is.character(model_package_group_name),
-        is.null(supplied_baseline_constraints) || is.character(supplied_baseline_constraints),
+        is.logical(skip_check) || inherits(skip_check, "Parameter"),
+        is.logical(register_new_baseline) || inherits(register_new_baseline, "Parameter"),
+        is.null(model_package_group_name) || is.character(model_package_group_name) || inherits(model_package_group_name, "Parameter"),
+        is.null(supplied_baseline_constraints) || is.character(supplied_baseline_constraints) || inherits(supplied_baseline_constraints, "Parameter"),
         is.null(display_name) || is.character(display_name),
         is.null(description) || is.character(description),
         is.null(cache_config) || inherits(cache_config, "CacheConfig"),
@@ -184,11 +242,11 @@ QualityCheckStep = R6Class("QualityCheckStep",
       self$cache_config = cache_config
 
       if (inherits(self$quality_check_config, "DataQualityCheckConfig")) {
-        private$.model_monitor = self$check_job_config$.__enclos_env__$private$.generate_model_monitor(
+        private$.model_monitor = self$check_job_config$.generate_model_monitor(
           "DefaultModelMonitor"
         )
       } else {
-        private$.model_monitor = self$check_job_config$.__enclos_env__$private$.generate_model_monitor(
+        private$.model_monitor = self$check_job_config$.generate_model_monitor(
           "ModelQualityMonitor"
         )
       }
@@ -459,5 +517,6 @@ QualityCheckStep = R6Class("QualityCheckStep",
         network_config=private$.model_monitor$network_config)
       )
     }
-  )
+  ),
+  lock_objects = FALSE
 )
