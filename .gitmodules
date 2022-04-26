@@ -1,6 +1,8 @@
 [submodule "vendor/botocore"]
 	path = vendor/botocore
+	branch = develop
 	url = https://github.com/boto/botocore
 [submodule "vendor/sagemaker"]
 	path = vendor/sagemaker
+	branch = master
 	url = https://github.com/aws/sagemaker-python-sdk
